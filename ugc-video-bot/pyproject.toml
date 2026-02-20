@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "ugc-video-bot"
+version = "0.1.0"
+description = "Bot que genera videos UGC a partir de enlaces de marketplace"
+requires-python = ">=3.11"
+dependencies = [
+    # API
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.0",
+
+    # Task queue
+    "celery[redis]>=5.4.0",
+    "redis>=5.1.0",
+
+    # Scraping
+    "playwright>=1.48.0",
+    "beautifulsoup4>=4.12.0",
+    "httpx>=0.27.0",
+
+    # AI / Script generation
+    "anthropic>=0.39.0",
+
+    # TTS client (comunicación con GPU pod)
+    "grpcio>=1.67.0",
+    "grpcio-tools>=1.67.0",
+
+    # Video composition
+    "moviepy>=2.0.0",
+    "Pillow>=10.4.0",
+
+    # Supabase
+    "supabase>=2.9.0",
+
+    # Utils
+    "python-multipart>=0.0.12",
+    "python-dotenv>=1.0.0",
+    "structlog>=24.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.7.0",
+    "mypy>=1.12.0",
+]
+gpu = [
+    # Dependencias para el GPU pod
+    "torch>=2.4.0",
+    "torchaudio>=2.4.0",
+    "torchvision>=0.19.0",
+    "transformers>=4.46.0",
+    "accelerate>=1.0.0",
+    "diffusers>=0.31.0",
+    "safetensors>=0.4.5",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
