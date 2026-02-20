@@ -1,9 +1,14 @@
+"""Compositor de video UGC.
+
+Combina clips I2V del producto + voz en off + subtítulos + música
+en un video final listo para redes sociales.
+"""
+
 import subprocess
 import uuid
 from pathlib import Path
 
 import structlog
-from PIL import Image
 
 from src.config.settings import settings
 
@@ -13,18 +18,27 @@ logger = structlog.get_logger()
 
 
 class VideoCompositor:
-    """Compone el video final de UGC combinando talking head + producto + overlays.
+    """Compone el video UGC final a partir de clips generados por I2V.
 
-    Usa FFmpeg para la composición del video final con:
-    - Video base de talking head
-    - Overlays de imágenes del producto (picture-in-picture)
-    - Subtítulos/texto
-    - Transiciones
+    Pipeline FFmpeg:
+    1. Concatena clips I2V del producto (con transiciones)
+    2. Superpone audio de voz en off
+    3. Agrega subtítulos estilo TikTok
+    4. Escala al formato correcto (9:16, 1:1, 16:9)
     """
 
-    async def compose(self, config: CompositionConfig) -> str:
+    async def compose(
+        self,
+        config: CompositionConfig,
+        audio_path: str = "",
+        video_clips: list[str] | None = None,
+    ) -> str:
         """Compone el video UGC final."""
-        logger.info("compositing_video", talking_head=config.talking_head_path)
+        logger.info(
+            "compositing_video",
+            clips=len(video_clips or []),
+            format=config.resolution,
+        )
 
         output_dir = Path(settings.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -32,182 +46,216 @@ class VideoCompositor:
         if not config.output_path:
             config.output_path = str(output_dir / f"ugc_{uuid.uuid4()}.mp4")
 
-        # Paso 1: Preparar imágenes del producto como overlay
-        overlay_paths = []
-        if config.add_product_overlay and config.product_images:
-            overlay_paths = await self._prepare_product_overlays(
-                config.product_images, config.resolution
-            )
+        width, height = config.resolution
 
-        # Paso 2: Construir el comando FFmpeg de composición
-        ffmpeg_cmd = self._build_ffmpeg_command(config, overlay_paths)
+        if video_clips:
+            # Paso 1: Concatenar clips con transiciones
+            concat_path = await self._concat_clips(video_clips, width, height, config.fps)
+        elif config.talking_head_path:
+            concat_path = config.talking_head_path
+        else:
+            raise ValueError("Se necesitan video_clips o talking_head_path")
 
-        # Paso 3: Ejecutar FFmpeg
-        logger.info("running_ffmpeg", cmd_length=len(ffmpeg_cmd))
-        result = subprocess.run(
-            ffmpeg_cmd,
-            capture_output=True,
-            text=True,
-            timeout=300,
-        )
+        # Paso 2: Agregar audio (voz en off)
+        if audio_path:
+            with_audio_path = await self._add_audio(concat_path, audio_path)
+        else:
+            with_audio_path = concat_path
 
-        if result.returncode != 0:
-            logger.error("ffmpeg_failed", stderr=result.stderr[:500])
-            raise RuntimeError(f"FFmpeg falló: {result.stderr[:500]}")
+        # Paso 3: Subtítulos
+        if config.add_subtitles and config.segments:
+            final_path = await self.add_subtitles(with_audio_path, config.segments)
+        else:
+            final_path = with_audio_path
+
+        # Paso 4: Copiar al output final si es diferente
+        if final_path != config.output_path:
+            self._ffmpeg_copy(final_path, config.output_path)
 
         logger.info("composition_complete", output=config.output_path)
         return config.output_path
 
-    async def _prepare_product_overlays(
-        self, image_paths: list[str], resolution: tuple[int, int]
-    ) -> list[str]:
-        """Prepara las imágenes del producto como overlays redimensionados."""
-        prepared = []
-        overlay_dir = Path(settings.temp_dir) / "overlays"
-        overlay_dir.mkdir(parents=True, exist_ok=True)
+    async def _concat_clips(
+        self,
+        clip_paths: list[str],
+        width: int,
+        height: int,
+        fps: int,
+    ) -> str:
+        """Concatena clips con transiciones crossfade."""
+        if len(clip_paths) == 1:
+            return clip_paths[0]
 
-        width, height = resolution
-        overlay_size = (int(width * 0.4), int(width * 0.4))  # 40% del ancho
+        output = str(Path(settings.temp_dir) / f"concat_{uuid.uuid4().hex[:8]}.mp4")
 
-        for i, img_path in enumerate(image_paths[:4]):
-            try:
-                img = Image.open(img_path)
-                img.thumbnail(overlay_size, Image.LANCZOS)
+        # Crear archivo de lista para concat
+        list_path = str(Path(settings.temp_dir) / f"concat_list_{uuid.uuid4().hex[:8]}.txt")
+        with open(list_path, "w") as f:
+            for clip in clip_paths:
+                f.write(f"file '{clip}'\n")
 
-                # Agregar fondo blanco con esquinas redondeadas
-                bg = Image.new("RGBA", img.size, (255, 255, 255, 240))
-                if img.mode == "RGBA":
-                    bg.paste(img, mask=img)
-                else:
-                    bg.paste(img)
+        # Primero escalar todos los clips al mismo tamaño, luego concatenar
+        # Usamos filtro complejo para transiciones crossfade
+        n = len(clip_paths)
+        xfade_duration = 0.5  # 0.5s de transición entre clips
 
-                out_path = overlay_dir / f"overlay_{i}.png"
-                bg.save(str(out_path))
-                prepared.append(str(out_path))
-            except Exception as e:
-                logger.warning("overlay_prep_failed", image=img_path, error=str(e))
+        cmd = ["ffmpeg", "-y"]
+        for clip in clip_paths:
+            cmd.extend(["-i", clip])
 
-        return prepared
+        # Construir filtro complejo con xfade
+        filter_parts = []
 
-    def _build_ffmpeg_command(
-        self, config: CompositionConfig, overlay_paths: list[str]
-    ) -> list[str]:
-        """Construye el comando FFmpeg para la composición."""
-        width, height = config.resolution
+        # Primero escalar cada input
+        for i in range(n):
+            filter_parts.append(
+                f"[{i}:v]scale={width}:{height}:force_original_aspect_ratio=decrease,"
+                f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2,"
+                f"setsar=1,fps={fps}[v{i}]"
+            )
+
+        # Luego aplicar xfade entre clips consecutivos
+        if n == 2:
+            filter_parts.append(
+                f"[v0][v1]xfade=transition=fade:duration={xfade_duration}:offset=auto[vout]"
+            )
+        elif n > 2:
+            # Encadenar xfades
+            filter_parts.append(
+                f"[v0][v1]xfade=transition=fade:duration={xfade_duration}:offset=auto[xf0]"
+            )
+            for i in range(2, n):
+                prev = f"[xf{i - 2}]"
+                curr = f"[v{i}]"
+                out = "[vout]" if i == n - 1 else f"[xf{i - 1}]"
+                filter_parts.append(
+                    f"{prev}{curr}xfade=transition=fade:duration={xfade_duration}:offset=auto{out}"
+                )
+        else:
+            filter_parts.append("[v0]copy[vout]")
+
+        cmd.extend(["-filter_complex", ";".join(filter_parts)])
+        cmd.extend([
+            "-map", "[vout]",
+            "-c:v", "libx264", "-preset", "medium", "-crf", "23",
+            "-r", str(fps),
+            "-movflags", "+faststart",
+            output,
+        ])
+
+        self._run_ffmpeg(cmd, "concat_clips")
+        return output
+
+    async def _add_audio(self, video_path: str, audio_path: str) -> str:
+        """Superpone audio de voz en off al video."""
+        output = str(Path(settings.temp_dir) / f"with_audio_{uuid.uuid4().hex[:8]}.mp4")
 
         cmd = [
             "ffmpeg", "-y",
-            "-i", config.talking_head_path,
+            "-i", video_path,
+            "-i", audio_path,
+            "-filter_complex",
+            "[1:a]apad[a]",  # Pad audio si es más corto que el video
+            "-map", "0:v",
+            "-map", "[a]",
+            "-c:v", "copy",
+            "-c:a", "aac", "-b:a", "128k",
+            "-shortest",
+            "-movflags", "+faststart",
+            output,
         ]
 
-        # Agregar inputs de overlays
-        for path in overlay_paths:
-            cmd.extend(["-i", path])
-
-        # Construir filtro complejo
-        filter_parts = []
-        current_stream = "[0:v]"
-
-        if overlay_paths:
-            # Cada overlay aparece en un segmento diferente del video
-            for i, _ in enumerate(overlay_paths):
-                input_idx = i + 1
-                # Calcular timing para cada overlay (distribuir equitativamente)
-                segment_duration = 5  # 5 segundos por overlay
-                start_time = 3 + (i * segment_duration)  # Empezar después del hook
-                end_time = start_time + segment_duration
-
-                # Posicionar overlay en la esquina superior derecha
-                x_pos = width - int(width * 0.42)
-                y_pos = int(height * 0.05)
-
-                overlay_stream = f"[{input_idx}:v]"
-                out_stream = f"[v{i}]"
-
-                filter_parts.append(
-                    f"{current_stream}{overlay_stream}overlay="
-                    f"x={x_pos}:y={y_pos}:"
-                    f"enable='between(t,{start_time},{end_time})'"
-                    f"{out_stream}"
-                )
-                current_stream = out_stream
-
-        # Escalar a resolución final
-        final_stream = current_stream if current_stream != "[0:v]" else "[0:v]"
-        filter_parts.append(f"{final_stream}scale={width}:{height}[vout]")
-
-        if filter_parts:
-            cmd.extend(["-filter_complex", ";".join(filter_parts)])
-            cmd.extend(["-map", "[vout]", "-map", "0:a?"])
-        else:
-            cmd.extend(["-vf", f"scale={width}:{height}"])
-
-        # Output settings
-        cmd.extend([
-            "-c:v", "libx264",
-            "-preset", "medium",
-            "-crf", "23",
-            "-c:a", "aac",
-            "-b:a", "128k",
-            "-movflags", "+faststart",
-            "-r", str(config.fps),
-            config.output_path,
-        ])
-
-        return cmd
+        self._run_ffmpeg(cmd, "add_audio")
+        return output
 
     async def add_subtitles(self, video_path: str, segments: list[dict]) -> str:
-        """Agrega subtítulos al video usando FFmpeg drawtext."""
-        output_path = video_path.replace(".mp4", "_sub.mp4")
+        """Agrega subtítulos estilo TikTok/Reels."""
+        output = video_path.replace(".mp4", "_sub.mp4")
+        if output == video_path:
+            output = str(Path(settings.temp_dir) / f"sub_{uuid.uuid4().hex[:8]}.mp4")
 
-        # Generar archivo SRT
         srt_path = video_path.replace(".mp4", ".srt")
+        if srt_path == video_path:
+            srt_path = str(Path(settings.temp_dir) / f"sub_{uuid.uuid4().hex[:8]}.srt")
+
         self._generate_srt(srt_path, segments)
 
         cmd = [
             "ffmpeg", "-y",
             "-i", video_path,
-            "-vf", f"subtitles={srt_path}:force_style='FontSize=22,PrimaryColour=&HFFFFFF&,"
-            "OutlineColour=&H000000&,Outline=2,Alignment=2,MarginV=80'",
+            "-vf",
+            f"subtitles={srt_path}:force_style='"
+            "FontName=Arial,FontSize=24,PrimaryColour=&HFFFFFF&,"
+            "OutlineColour=&H000000&,Outline=3,Shadow=1,"
+            "Alignment=2,MarginV=100,Bold=1'",
             "-c:a", "copy",
-            output_path,
+            output,
         ]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         if result.returncode != 0:
             logger.warning("subtitle_failed", stderr=result.stderr[:300])
-            return video_path  # Retornar video sin subtítulos si falla
-
-        return output_path
+            return video_path
+        return output
 
     def _generate_srt(self, path: str, segments: list[dict]) -> None:
-        """Genera un archivo SRT a partir de los segmentos del guion."""
+        """Genera SRT a partir de los segmentos del storyboard."""
         lines = []
         current_time = 0.0
 
         for i, seg in enumerate(segments, 1):
-            text = seg.get("text", "")
-            # Estimar duración basada en longitud del texto (~150 palabras/minuto)
-            words = len(text.split())
-            duration = max(2.0, words / 2.5)
+            # Parsear time_range si existe (ej: "[0-3s]")
+            time_range = seg.get("time_range", "")
+            if time_range:
+                start_s, end_s = self._parse_time_range(time_range)
+            else:
+                # Estimar duración basada en el texto visual
+                visual = seg.get("visual", seg.get("text", ""))
+                words = len(visual.split())
+                duration = max(2.0, words / 2.5)
+                start_s = current_time
+                end_s = current_time + duration
+                current_time = end_s
 
-            start = self._format_srt_time(current_time)
-            end = self._format_srt_time(current_time + duration)
-
-            lines.append(f"{i}")
-            lines.append(f"{start} --> {end}")
-            lines.append(text)
-            lines.append("")
-
-            current_time += duration
+            text_overlay = seg.get("text_overlay", "")
+            if text_overlay:
+                lines.append(f"{i}")
+                lines.append(f"{self._format_srt_time(start_s)} --> {self._format_srt_time(end_s)}")
+                lines.append(text_overlay)
+                lines.append("")
 
         with open(path, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
 
+    def _parse_time_range(self, time_range: str) -> tuple[float, float]:
+        """Parsea '[0-3s]' → (0.0, 3.0)."""
+        cleaned = time_range.strip("[]s ")
+        parts = cleaned.split("-")
+        try:
+            return float(parts[0]), float(parts[1])
+        except (ValueError, IndexError):
+            return 0.0, 3.0
+
     def _format_srt_time(self, seconds: float) -> str:
-        """Formatea segundos al formato SRT (HH:MM:SS,mmm)."""
         h = int(seconds // 3600)
         m = int((seconds % 3600) // 60)
         s = int(seconds % 60)
         ms = int((seconds % 1) * 1000)
         return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
+
+    def _ffmpeg_copy(self, src: str, dst: str) -> None:
+        """Copia un video sin re-encoding."""
+        cmd = [
+            "ffmpeg", "-y", "-i", src,
+            "-c", "copy", "-movflags", "+faststart",
+            dst,
+        ]
+        self._run_ffmpeg(cmd, "copy")
+
+    def _run_ffmpeg(self, cmd: list[str], step: str) -> None:
+        """Ejecuta FFmpeg y verifica el resultado."""
+        logger.info("ffmpeg_running", step=step)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        if result.returncode != 0:
+            logger.error("ffmpeg_failed", step=step, stderr=result.stderr[:500])
+            raise RuntimeError(f"FFmpeg falló en {step}: {result.stderr[:500]}")
