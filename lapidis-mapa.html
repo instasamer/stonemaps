@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAPIDIS — Mapa Mundial de Canteras</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<style>
+:root {
+  --stone-dark: #1a1612;
+  --stone-mid: #2e2820;
+  --stone-warm: #3d3328;
+  --stone-tan: #8b7355;
+  --stone-sand: #c4a882;
+  --stone-cream: #f0e8dc;
+  --accent-gold: #c9a84c;
+  --text-muted: #9a8870;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--stone-dark); font-family:'DM Sans',sans-serif; color:var(--stone-cream); }
+
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:0.35;
+}
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:900;
+  padding:16px 48px; display:flex; justify-content:space-between; align-items:center;
+  background:linear-gradient(to bottom, rgba(26,22,18,0.98), rgba(26,22,18,0.75));
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(196,168,130,0.1);
+  height:60px;
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:8px; color:var(--stone-cream); text-decoration:none; }
+.logo span { color:var(--accent-gold); }
+.nav-center { position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:14px; }
+.nav-title { font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; color:var(--stone-sand); }
+.nav-sep { width:1px; height:16px; background:rgba(196,168,130,0.2); }
+.nav-sub { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--text-muted); }
+.nav-links { display:flex; gap:22px; list-style:none; align-items:center; }
+.nav-links a { font-size:10px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:var(--stone-sand); text-decoration:none; transition:color .3s; }
+.nav-links a:hover, .nav-links a.active { color:var(--accent-gold); }
+.nav-cta { background:var(--accent-gold)!important; color:var(--stone-dark)!important; padding:8px 20px; }
+
+/* MAP */
+#map-wrap {
+  position:fixed; inset:0; top:60px;
+  background:radial-gradient(ellipse 100% 80% at 50% 55%, #1c1710 0%, #13100c 50%, #0d0b08 100%);
+}
+
+#map-svg { width:100%; height:100%; display:block; }
+
+.graticule { fill:none; stroke:rgba(196,168,130,0.05); stroke-width:0.5; }
+.sphere { fill:#0d0b08; }
+.country { fill:#221e16; stroke:rgba(196,168,130,0.12); stroke-width:0.4; transition:fill 0.25s; }
+.country:hover { fill:#2e2818; }
+.country-active { fill:#2a2318 !important; }
+
+/* QUARRY MARKERS */
+.q-outer-ring {
+  fill:none; stroke-width:0.8;
+  animation:outerPulse 3s ease-out infinite;
+}
+.q-mid-ring {
+  fill:none; stroke-width:0.6;
+  animation:outerPulse 3s ease-out infinite;
+  animation-delay:0.5s;
+}
+.q-core { transition:r 0.25s ease; }
+.q-group { cursor:pointer; }
+/* hover handled in JS */
+
+@keyframes outerPulse {
+  0%   { transform:scale(1);   opacity:0.6; }
+  100% { transform:scale(2.8); opacity:0; }
+}
+
+/* Tier color scheme */
+.t1 .q-outer-ring, .t1 .q-mid-ring { stroke:#c9a84c; }
+.t1 .q-core { fill:#c9a84c; filter:drop-shadow(0 0 3px rgba(201,168,76,0.7)); }
+.t2 .q-outer-ring, .t2 .q-mid-ring { stroke:#a07840; }
+.t2 .q-core { fill:#9a7238; }
+.t3 .q-outer-ring, .t3 .q-mid-ring { stroke:#6a5530; }
+.t3 .q-core { fill:#5a4828; }
+
+/* TOOLTIP */
+#tt {
+  position:fixed; z-index:950; pointer-events:none;
+  opacity:0; transition:opacity 0.15s; max-width:270px;
+}
+#tt.show { opacity:1; }
+.tt-box {
+  background:rgba(20,16,11,0.97);
+  border:1px solid rgba(196,168,130,0.2);
+  border-top:2px solid var(--accent-gold);
+  padding:14px 18px;
+  backdrop-filter:blur(20px);
+}
+.tt-cnt { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--accent-gold); margin-bottom:5px; }
+.tt-name { font-family:'Cormorant Garamond',serif; font-size:17px; color:var(--stone-cream); line-height:1.2; margin-bottom:3px; }
+.tt-mat { font-family:'Cormorant Garamond',serif; font-size:12px; font-style:italic; color:var(--stone-sand); margin-bottom:7px; }
+.tt-line { height:1px; background:rgba(196,168,130,0.1); margin:7px 0; }
+.tt-fl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+.tt-fv { font-size:11px; color:var(--stone-tan); line-height:1.5; }
+
+/* SIDE PANEL */
+#panel {
+  position:fixed; right:0; top:60px; bottom:0; width:320px; z-index:800;
+  background:rgba(16,13,10,0.95);
+  border-left:1px solid rgba(196,168,130,0.1);
+  backdrop-filter:blur(24px);
+  transform:translateX(100%);
+  transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+  overflow-y:auto;
+}
+#panel.open { transform:translateX(0); }
+.p-close {
+  position:absolute; top:14px; right:14px; width:34px; height:34px;
+  background:var(--stone-warm); border:none; cursor:pointer; color:var(--stone-sand);
+  font-size:14px; display:flex; align-items:center; justify-content:center; z-index:10;
+  transition:all .25s;
+}
+.p-close:hover { background:var(--accent-gold); color:var(--stone-dark); }
+.p-bar { height:3px; background:linear-gradient(90deg,var(--accent-gold),transparent); }
+.p-head { padding:28px 28px 18px; border-bottom:1px solid rgba(196,168,130,0.07); }
+.p-eye { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--accent-gold); margin-bottom:7px; }
+.p-name { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; color:var(--stone-cream); line-height:1.1; margin-bottom:5px; }
+.p-loc { font-size:11px; color:var(--text-muted); }
+.p-body { padding:20px 28px; }
+.pf { margin-bottom:14px; }
+.pk { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+.pv { font-size:13px; color:var(--stone-sand); line-height:1.5; }
+.pv-em { font-family:'Cormorant Garamond',serif; font-size:14px; font-style:italic; }
+.p-div { height:1px; background:rgba(196,168,130,0.07); margin:14px 0; }
+.p-fame { background:rgba(201,168,76,0.05); border-left:2px solid var(--accent-gold); padding:12px 14px; }
+.p-fame-l { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--accent-gold); margin-bottom:5px; }
+.p-fame-v { font-size:12px; color:var(--stone-tan); line-height:1.6; }
+.p-cta {
+  display:block; text-align:center; padding:11px; margin-top:14px;
+  font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  border:1px solid rgba(196,168,130,0.18); color:var(--stone-sand);
+  text-decoration:none; transition:all .25s;
+}
+.p-cta:hover { border-color:var(--accent-gold); color:var(--accent-gold); }
+
+/* LEGEND */
+#legend {
+  position:fixed; left:32px; bottom:28px; z-index:800;
+  background:rgba(14,11,8,0.9);
+  border:1px solid rgba(196,168,130,0.1);
+  padding:14px 18px;
+  backdrop-filter:blur(16px);
+}
+.leg-t { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
+.leg-r { display:flex; align-items:center; gap:9px; margin-bottom:7px; }
+.leg-r:last-child { margin-bottom:0; }
+.leg-d { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.ld1 { background:var(--accent-gold); box-shadow:0 0 6px rgba(201,168,76,0.5); }
+.ld2 { background:#9a7238; }
+.ld3 { background:#5a4828; }
+.leg-l { font-size:9px; color:var(--text-muted); letter-spacing:1px; }
+
+/* COUNTER */
+#ctr { position:fixed; left:32px; top:88px; z-index:800; pointer-events:none; }
+.cn { font-family:'Bebas Neue',sans-serif; font-size:52px; letter-spacing:2px; color:var(--stone-cream); line-height:1; }
+.cn span { color:var(--accent-gold); font-size:32px; }
+.cl { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--text-muted); }
+
+/* FILTERS */
+#filters {
+  position:fixed; left:50%; transform:translateX(-50%); bottom:28px; z-index:800;
+  display:flex; gap:3px;
+}
+.fp {
+  padding:7px 15px; font-size:8px; font-weight:500; letter-spacing:3px; text-transform:uppercase;
+  background:rgba(14,11,8,0.9); border:1px solid rgba(196,168,130,0.12);
+  color:var(--text-muted); cursor:pointer; transition:all .25s; white-space:nowrap;
+  font-family:'DM Sans',sans-serif; backdrop-filter:blur(16px);
+}
+.fp:hover { border-color:var(--stone-tan); color:var(--stone-sand); }
+.fp.on { background:rgba(201,168,76,0.1); border-color:var(--accent-gold); color:var(--accent-gold); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--stone-tan); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="stone-portal.html" class="logo">LAPID<span>I</span>S</a>
+  <div class="nav-center">
+    <div class="nav-title">Mapa Mundial de Canteras</div>
+    <div class="nav-sep"></div>
+    <div class="nav-sub">46 canteras icónicas · 36 países</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="stone-portal.html">Inicio</a></li>
+    <li><a href="lapidis-canteras.html">Directorio</a></li>
+    <li><a href="#" class="nav-cta">Publicar Perfil</a></li>
+  </ul>
+</nav>
+
+<div id="map-wrap">
+  <svg id="map-svg"></svg>
+</div>
+
+<div id="ctr">
+  <div class="cn" id="cnNum">46<span>+</span></div>
+  <div class="cl" id="cnLbl">Canteras icónicas</div>
+</div>
+
+<div id="legend">
+  <div class="leg-t">Relevancia histórica</div>
+  <div class="leg-r"><div class="leg-d ld1"></div><div class="leg-l">Patrimonio mundial</div></div>
+  <div class="leg-r"><div class="leg-d ld2"></div><div class="leg-l">Alta relevancia</div></div>
+  <div class="leg-r"><div class="leg-d ld3"></div><div class="leg-l">Relevancia regional</div></div>
+</div>
+
+<div id="filters">
+  <button class="fp on" data-f="todos">Todas</button>
+  <button class="fp" data-f="Mármol">Mármol</button>
+  <button class="fp" data-f="Granito">Granito</button>
+  <button class="fp" data-f="Travertino">Travertino</button>
+  <button class="fp" data-f="Caliza">Caliza</button>
+  <button class="fp" data-f="Cuarcita">Cuarcita</button>
+  <button class="fp" data-f="otros">Otros</button>
+</div>
+
+<div id="tt"><div class="tt-box">
+  <div class="tt-cnt" id="ttC"></div>
+  <div class="tt-name" id="ttN"></div>
+  <div class="tt-mat" id="ttM"></div>
+  <div class="tt-line"></div>
+  <div class="tt-fl">Proyectos &amp; monumentos</div>
+  <div class="tt-fv" id="ttF"></div>
+</div></div>
+
+<div id="panel">
+  <div class="p-bar"></div>
+  <button class="p-close" id="pClose">✕</button>
+  <div class="p-head">
+    <div class="p-eye" id="pEye"></div>
+    <div class="p-name" id="pName"></div>
+    <div class="p-loc" id="pLoc"></div>
+  </div>
+  <div class="p-body" id="pBody"></div>
+</div>
+
+<script>
+const QUARRIES = [{"name": "Cava Fantiscritti", "country": "Italia", "type": "Mármol", "lat": 44.07, "lng": 10.12, "fame": "Coliseo Romano, Panteón de Agripa", "material": "Bianco Carrara", "tier": 1}, {"name": "Cava Michelangelo / Cervaiole", "country": "Italia", "type": "Mármol", "lat": 44.09, "lng": 10.1, "fame": "David de Miguel Ángel, Pietà", "material": "Statuario", "tier": 1}, {"name": "Cava Tívoli", "country": "Italia", "type": "Travertino", "lat": 41.97, "lng": 12.79, "fame": "Coliseo Romano, San Pedro, Fontana di Trevi, Columnata Bernini", "material": "Travertino Romano Classico", "tier": 1}, {"name": "Candoglia", "country": "Italia", "type": "Mármol", "lat": 45.92, "lng": 8.45, "fame": "Duomo de Milán (cantera exclusiva desde 1386)", "material": "Candoglia Rosa", "tier": 1}, {"name": "Crema Marfil (Novelda)", "country": "España", "type": "Mármol", "lat": 38.39, "lng": -0.77, "fame": "Parlamento Europeo, Aeropuerto Barajas, Palacio Real Abu Dhabi", "material": "Crema Marfil DOP", "tier": 1}, {"name": "Macael", "country": "España", "type": "Mármol", "lat": 37.35, "lng": -2.28, "fame": "Alhambra de Granada, Plaza San Pedro Roma", "material": "Blanco Macael", "tier": 1}, {"name": "CUPA Pizarra", "country": "España", "type": "Pizarra", "lat": 42.3, "lng": -7.1, "fame": "Empire State Building (techo), Sagrada Familia", "material": "Pizarra gallega", "tier": 2}, {"name": "Marmara Island", "country": "Turquía", "type": "Mármol", "lat": 40.62, "lng": 27.59, "fame": "Columnas originales de Santa Sofía (562 d.C.)", "material": "Marmara White", "tier": 1}, {"name": "Denizli Travertine", "country": "Turquía", "type": "Travertino", "lat": 37.77, "lng": 29.09, "fame": "Pamukkale UNESCO, exportación a EEUU", "material": "Turkish Travertine", "tier": 1}, {"name": "Afyon Marble", "country": "Turquía", "type": "Mármol", "lat": 38.75, "lng": 30.54, "fame": "Palacios UAE, hoteles lujo China", "material": "Afyon White", "tier": 2}, {"name": "Pentelikon", "country": "Grecia", "type": "Mármol", "lat": 38.05, "lng": 23.89, "fame": "Partenón, Acrópolis de Atenas (447 a.C.)", "material": "Mármol Pentélico", "tier": 1}, {"name": "Thassos White", "country": "Grecia", "type": "Mármol", "lat": 40.69, "lng": 24.7, "fame": "Trump SoHo NY, Guggenheim Bilbao, hoteles Dubái", "material": "Thassos Super White", "tier": 1}, {"name": "Paros Marble", "country": "Grecia", "type": "Mármol", "lat": 37.08, "lng": 25.15, "fame": "Venus de Milo, Hermes de Praxíteles", "material": "Parian Marble", "tier": 1}, {"name": "Estremoz", "country": "Portugal", "type": "Mármol", "lat": 38.84, "lng": -7.59, "fame": "Basílica de Mafra, Palacio da Ajuda", "material": "Branco Estremoz", "tier": 1}, {"name": "Pierre de Bourgogne", "country": "Francia", "type": "Caliza", "lat": 47.08, "lng": 4.52, "fame": "Versalles, Louvre, Notre-Dame, toda la arquitectura haussmanniana de París", "material": "Pierre de Bourgogne", "tier": 1}, {"name": "Carrières du Hainaut", "country": "Bélgica", "type": "Caliza", "lat": 50.48, "lng": 3.95, "fame": "Gran Lugar Bruselas, Brujas, Gante medieval", "material": "Bleu Belge / Petit Granit", "tier": 2}, {"name": "Lundhs Blue Pearl", "country": "Noruega", "type": "Granito", "lat": 59.04, "lng": 10.07, "fame": "Empire State Building Hall, Palacio Real Oslo", "material": "Blue Pearl (único en el mundo)", "tier": 1}, {"name": "Portland Stone", "country": "Reino Unido", "type": "Caliza", "lat": 50.55, "lng": -2.44, "fame": "Catedral de San Pablo, Banco de Inglaterra, Parlamento Westminster", "material": "Portland Stone", "tier": 1}, {"name": "Welsh Slate (Penrhyn)", "country": "Reino Unido", "type": "Pizarra", "lat": 53.2, "lng": -4.02, "fame": "Empire State Building, Sagrada Familia (techo), UNESCO 2021", "material": "Welsh Slate", "tier": 1}, {"name": "Vals Quartzite", "country": "Suiza", "type": "Cuarcita", "lat": 46.62, "lng": 9.18, "fame": "Termas de Vals (Peter Zumthor, Premio Pritzker 2009)", "material": "Vals Quartzite", "tier": 2}, {"name": "Makrana", "country": "India", "type": "Mármol", "lat": 27.04, "lng": 74.73, "fame": "Taj Mahal (1632–1653), Qutub Minar Delhi", "material": "Makrana White", "tier": 1}, {"name": "Black Galaxy", "country": "India", "type": "Granito", "lat": 14.46, "lng": 77.6, "fame": "Trump Tower NY, hoteles Dubái 5*", "material": "Black Galaxy", "tier": 1}, {"name": "Agra Red Sandstone", "country": "India", "type": "Arenisca", "lat": 27.17, "lng": 78.02, "fame": "Fuerte Rojo Delhi, Fatehpur Sikri", "material": "Red Sandstone", "tier": 2}, {"name": "Fangshan Imperial", "country": "China", "type": "Mármol", "lat": 39.73, "lng": 115.98, "fame": "Ciudad Prohibida, Tiananmén, Palacio de Verano", "material": "Han Bai Yu", "tier": 1}, {"name": "Fujian Granite Belt", "country": "China", "type": "Granito", "lat": 25.44, "lng": 119.3, "fame": "Pavimentos de toda Europa y EEUU", "material": "G654, G603", "tier": 2}, {"name": "Lorestan Onyx", "country": "Irán", "type": "Ónix", "lat": 33.49, "lng": 48.35, "fame": "Hoteles VIP Dubái, Abu Dhabi, Riad, Londres", "material": "Persian Gold Onyx", "tier": 1}, {"name": "Yazd Travertine", "country": "Irán", "type": "Travertino", "lat": 31.9, "lng": 54.37, "fame": "Exportación masiva a EEUU (pre-sanciones)", "material": "Iranian Silver Travertine", "tier": 2}, {"name": "Sukabumi / Bali Green", "country": "Indonesia", "type": "Cuarcita", "lat": -6.92, "lng": 106.93, "fame": "Four Seasons Bali, Aman NY Spa, Amanjiwo Resort", "material": "Sukabumi Green", "tier": 1}, {"name": "Badakhshan Lapis", "country": "Afganistán", "type": "Lapislázuli", "lat": 37.48, "lng": 70.8, "fame": "Máscara de Tutankamón, pigmento ultramarine renacentista", "material": "Lapis Lazuli", "tier": 1}, {"name": "Aswan Granite", "country": "Egipto", "type": "Granito", "lat": 24.09, "lng": 32.9, "fame": "Pirámides de Guiza, todos los obeliscos faraónicos del mundo", "material": "Aswan Red Granite", "tier": 1}, {"name": "Galala", "country": "Egipto", "type": "Mármol", "lat": 28.55, "lng": 32.56, "fame": "Hoteles Oriente Medio y Europa del Este", "material": "Galala Cream", "tier": 2}, {"name": "Chemtou / Numidia", "country": "Túnez", "type": "Mármol", "lat": 36.51, "lng": 8.57, "fame": "Foros romanos de toda Italia, Arco de Tito (81 d.C.)", "material": "Giallo Antico (histórico)", "tier": 1}, {"name": "Zimbabwe Black", "country": "Zimbabue", "type": "Granito", "lat": -19.0, "lng": 29.8, "fame": "Monumentos y lápidas en toda Europa", "material": "Zimbabwe Black", "tier": 2}, {"name": "Yule Marble", "country": "EEUU", "type": "Mármol", "lat": 38.94, "lng": -107.02, "fame": "Lincoln Memorial, Tumba del Soldado Desconocido", "material": "Colorado Yule White", "tier": 1}, {"name": "Barre Gray Granite", "country": "EEUU", "type": "Granito", "lat": 44.2, "lng": -72.5, "fame": "Arlington National Cemetery (90% monumentos funerarios EEUU)", "material": "Barre Gray", "tier": 1}, {"name": "Stony Creek Granite", "country": "EEUU", "type": "Granito", "lat": 41.31, "lng": -72.79, "fame": "Base de la Estatua de la Libertad", "material": "Stony Creek Pink", "tier": 1}, {"name": "Minas Gerais Stone Belt", "country": "Brasil", "type": "Cuarcita", "lat": -18.51, "lng": -44.55, "fame": "Hoteles 5*, residencias de lujo globales, lobbies premium", "material": "Taj Mahal Quartzite, Blue Bahia", "tier": 1}, {"name": "Tyndall Stone", "country": "Canadá", "type": "Caliza", "lat": 50.09, "lng": -96.42, "fame": "Parliament Hill Ottawa, Manitoba Legislative Building", "material": "Tyndall Stone", "tier": 2}, {"name": "Onix Tecali", "country": "México", "type": "Ónix", "lat": 18.73, "lng": -97.7, "fame": "Cámara de Diputados México, hoteles boutique", "material": "Ónix Tecali (prehispánico)", "tier": 2}, {"name": "Koyelga Marble", "country": "Rusia", "type": "Mármol", "lat": 54.1, "lng": 60.95, "fame": "Metro de Moscú, Palacios de Cultura soviéticos", "material": "Koyelga White", "tier": 1}, {"name": "Mramorskoye (Urales)", "country": "Rusia", "type": "Mármol", "lat": 56.48, "lng": 60.68, "fame": "Catedral San Isaac SP, Palacio de Invierno", "material": "Ural White", "tier": 2}, {"name": "Volga Blue (Golovinskoye)", "country": "Ucrania", "type": "Granito", "lat": 50.1, "lng": 28.65, "fame": "Exportación a Italia, Alemania, EEUU", "material": "Volga Blue", "tier": 2}, {"name": "Armenian Tuff Zone", "country": "Armenia", "type": "Toba volcánica", "lat": 40.18, "lng": 44.51, "fame": "Templo de Garni (s.I a.C.), Etchmiadzin UNESCO", "material": "Armenian Tuff", "tier": 2}, {"name": "Takaka Marble", "country": "Nueva Zelanda", "type": "Mármol", "lat": -40.85, "lng": 172.8, "fame": "Edificios históricos de Wellington y Auckland", "material": "Takaka Marble", "tier": 3}, {"name": "Aji Granite", "country": "Japón", "type": "Granito", "lat": 34.39, "lng": 134.12, "fame": "Linternas japonesas (toro), jardines Zen centenarios", "material": "Aji Granite", "tier": 2}, {"name": "Artigas Amethyst", "country": "Uruguay", "type": "Cuarzo", "lat": -30.4, "lng": -56.96, "fame": "Geodos únicos, coleccionismo, decoración retroiluminada", "material": "Amatista de Artigas", "tier": 3}];
+
+const MAIN_TYPES = ['Mármol','Granito','Travertino','Caliza','Cuarcita'];
+let activeFilter = 'todos';
+let svg, projection, path, zoom;
+
+const W = () => window.innerWidth;
+const H = () => window.innerHeight - 60;
+
+function initMap() {
+  svg = d3.select('#map-svg')
+    .attr('width', W())
+    .attr('height', H());
+
+  projection = d3.geoNaturalEarth1()
+    .scale(Math.min(W() / 5.5, H() / 3.2))
+    .translate([W() / 2, H() / 2 + 20]);
+
+  path = d3.geoPath().projection(projection);
+
+  zoom = d3.zoom()
+    .scaleExtent([0.8, 12])
+    .on('zoom', (e) => {
+      g.attr('transform', e.transform);
+      const k = e.transform.k;
+      d3.selectAll('.q-group').each(function() {
+        const base = +d3.select(this).attr('data-r');
+        if (!base) return;
+        const s = base / k;
+        d3.select(this).select('.q-core').attr('r', s);
+        d3.select(this).select('.q-outer-ring').attr('r', s);
+      });
+    });
+
+  svg.call(zoom);
+
+  const g = svg.append('g').attr('id','g-map');
+
+  // Sphere (ocean)
+  g.append('path')
+    .datum({type:'Sphere'})
+    .attr('class','sphere')
+    .attr('d', path);
+
+  // Graticule
+  const grat = d3.geoGraticule()();
+  g.append('path')
+    .datum(grat)
+    .attr('class','graticule')
+    .attr('d', path);
+
+  // Countries from TopoJSON
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r => r.json())
+    .then(world => {
+      const countries = topojson.feature(world, world.objects.countries);
+      g.selectAll('.country')
+        .data(countries.features)
+        .join('path')
+        .attr('class','country')
+        .attr('d', path);
+
+      renderMarkers(g);
+    });
+}
+
+function renderMarkers(g) {
+  g.selectAll('.q-group').remove();
+
+  const visible = QUARRIES.filter(q => {
+    if (activeFilter === 'todos') return true;
+    if (activeFilter === 'otros') return !MAIN_TYPES.includes(q.type);
+    return q.type === activeFilter;
+  });
+
+  document.getElementById('cnNum').innerHTML = visible.length + '<span>+</span>';
+  document.getElementById('cnLbl').textContent =
+    activeFilter === 'todos' ? 'Canteras icónicas' :
+    activeFilter === 'otros' ? 'Canteras · Otros tipos' :
+    'Canteras de ' + activeFilter;
+
+  const markerG = g.append('g').attr('id','markers');
+
+  visible.forEach((q, i) => {
+    const coords = projection([q.lng, q.lat]);
+    if (!coords) return;
+    const [x, y] = coords;
+
+    const r = q.tier === 1 ? 5.5 : q.tier === 2 ? 3.8 : 2.5;
+    const delay = ((i * 1.1) % 3).toFixed(1) + 's';
+
+    const grp = markerG.append('g')
+      .attr('class', `q-group t${q.tier}`)
+      .attr('transform', `translate(${x},${y})`)
+      .attr('data-r', r);
+
+    // Outer pulse
+    grp.append('circle')
+      .attr('class','q-outer-ring')
+      .attr('r', r)
+      .style('animation-delay', delay)
+      .style('transform-origin', '0 0');
+
+    // Core dot
+    grp.append('circle')
+      .attr('class','q-core')
+      .attr('r', r);
+
+    // Events
+    grp.on('mouseover', function() {
+      const k = d3.zoomTransform(svg.node()).k;
+      const base = +d3.select(this).attr('data-r');
+      d3.select(this).select('.q-core').attr('r', (base / k) * 1.6);
+    })
+    .on('mouseout', function() {
+      const k = d3.zoomTransform(svg.node()).k;
+      const base = +d3.select(this).attr('data-r');
+      d3.select(this).select('.q-core').attr('r', base / k);
+    });
+    grp.on('mouseenter', (e) => {
+      document.getElementById('ttC').textContent = q.country + '  ·  ' + q.type;
+      document.getElementById('ttN').textContent = q.name;
+      document.getElementById('ttM').textContent = q.material;
+      document.getElementById('ttF').textContent = q.fame;
+      document.getElementById('tt').classList.add('show');
+    })
+    .on('mousemove', (e) => {
+      const tt = document.getElementById('tt');
+      let tx = e.clientX + 18, ty = e.clientY - 12;
+      if (tx + 280 > W()) tx = e.clientX - 290;
+      if (ty + 160 > H() + 60) ty = e.clientY - 170;
+      tt.style.left = tx + 'px';
+      tt.style.top = ty + 'px';
+    })
+    .on('mouseleave', () => {
+      document.getElementById('tt').classList.remove('show');
+    })
+    .on('click', () => openPanel(q));
+  });
+}
+
+function openPanel(q) {
+  const tLabel = q.tier === 1 ? '⭐ Patrimonio mundial' : q.tier === 2 ? '★ Alta relevancia' : '· Relevancia regional';
+  document.getElementById('pEye').textContent = q.country + '  ·  ' + q.type;
+  document.getElementById('pName').textContent = q.name;
+  document.getElementById('pLoc').textContent = '📍 ' + q.country + ' · ' + q.lat.toFixed(2) + '°N, ' + q.lng.toFixed(2) + '°E';
+  document.getElementById('pBody').innerHTML = `
+    <div class="pf">
+      <div class="pk">Material extraído</div>
+      <div class="pv pv-em">${q.material}</div>
+    </div>
+    <div class="pf">
+      <div class="pk">Tipo de roca</div>
+      <div class="pv">${q.type}</div>
+    </div>
+    <div class="pf">
+      <div class="pk">Relevancia histórica</div>
+      <div class="pv" style="color:var(--accent-gold)">${tLabel}</div>
+    </div>
+    <div class="p-div"></div>
+    <div class="p-fame">
+      <div class="p-fame-l">Monumentos &amp; proyectos clave</div>
+      <div class="p-fame-v">${q.fame}</div>
+    </div>
+    <div class="p-div"></div>
+    <a href="lapidis-canteras.html" class="p-cta">Ver ficha completa en directorio →</a>
+  `;
+  document.getElementById('panel').classList.add('open');
+}
+
+document.getElementById('pClose').addEventListener('click', () => {
+  document.getElementById('panel').classList.remove('open');
+});
+
+document.querySelectorAll('.fp').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.fp').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    activeFilter = b.dataset.f;
+    const g = document.getElementById('g-map') ? d3.select('#g-map') : null;
+    if (g) renderMarkers(g);
+  });
+});
+
+window.addEventListener('resize', () => {
+  d3.select('#map-svg').attr('width', W()).attr('height', H());
+  projection.scale(Math.min(W() / 5.5, H() / 3.2)).translate([W() / 2, H() / 2 + 20]);
+  d3.selectAll('.sphere,.graticule,.country').attr('d', path);
+  const g = d3.select('#g-map');
+  renderMarkers(g);
+});
+
+initMap();
+</script>
+</body>
+</html>

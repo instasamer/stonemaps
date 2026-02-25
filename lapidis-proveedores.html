@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAPIDIS — Proveedores Destacados</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --stone-dark: #1a1612;
+  --stone-mid: #2e2820;
+  --stone-warm: #3d3328;
+  --stone-tan: #8b7355;
+  --stone-sand: #c4a882;
+  --stone-cream: #f0e8dc;
+  --accent-gold: #c9a84c;
+  --text-muted: #9a8870;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--stone-dark); color:var(--stone-cream); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:0.35;
+}
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:900;
+  padding:18px 60px; display:flex; justify-content:space-between; align-items:center;
+  background:linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(26,22,18,0.8));
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(196,168,130,0.1);
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:8px; color:var(--stone-cream); text-decoration:none; }
+.logo span { color:var(--accent-gold); }
+.nav-links { display:flex; gap:26px; list-style:none; align-items:center; }
+.nav-links a { font-size:10px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:var(--stone-sand); text-decoration:none; transition:color .3s; }
+.nav-links a:hover, .nav-links a.active { color:var(--accent-gold); }
+.nav-cta { background:var(--accent-gold)!important; color:var(--stone-dark)!important; padding:9px 22px; }
+
+/* PAGE HEADER */
+.page-header {
+  padding:130px 60px 70px; position:relative; overflow:hidden;
+  background:linear-gradient(135deg, var(--stone-dark) 0%, #201c15 60%, var(--stone-mid) 100%);
+}
+.page-header::after {
+  content:'PROVEEDORES'; position:absolute; right:40px; bottom:-30px;
+  font-family:'Bebas Neue',sans-serif; font-size:160px; letter-spacing:8px;
+  color:rgba(196,168,130,0.03); pointer-events:none; line-height:1;
+}
+.eyebrow { font-size:10px; font-weight:500; letter-spacing:5px; text-transform:uppercase; color:var(--accent-gold); margin-bottom:14px; display:flex; align-items:center; gap:12px; }
+.eyebrow::before { content:''; width:28px; height:1px; background:var(--accent-gold); }
+.page-title { font-family:'Cormorant Garamond',serif; font-size:clamp(48px,6vw,80px); font-weight:300; line-height:.95; color:var(--stone-cream); margin-bottom:20px; }
+.page-title em { font-style:italic; color:var(--stone-sand); }
+.page-desc { font-size:15px; line-height:1.7; color:var(--text-muted); max-width:560px; margin-bottom:36px; }
+.page-filters { display:flex; gap:4px; flex-wrap:wrap; }
+.pf-btn {
+  padding:8px 18px; font-size:9px; font-weight:500; letter-spacing:3px; text-transform:uppercase;
+  background:transparent; border:1px solid rgba(196,168,130,0.15); color:var(--text-muted);
+  cursor:pointer; transition:all .3s; font-family:'DM Sans',sans-serif;
+}
+.pf-btn.on, .pf-btn:hover { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(201,168,76,0.06); }
+
+/* SUPPLIER CARDS */
+.suppliers-section { padding:60px 60px 100px; }
+
+.supplier-card {
+  position:relative; overflow:hidden; margin-bottom:3px;
+  background:var(--stone-mid);
+  border:1px solid rgba(196,168,130,0.08);
+  transition:border-color .4s;
+}
+.supplier-card:hover { border-color:rgba(196,168,130,0.2); }
+
+/* Header band */
+.card-band {
+  height:4px;
+}
+
+/* Card layout */
+.card-inner {
+  display:grid;
+  grid-template-columns: 280px 1fr;
+  min-height:480px;
+}
+
+/* LEFT COLUMN */
+.card-left {
+  background:rgba(0,0,0,0.2);
+  border-right:1px solid rgba(196,168,130,0.08);
+  display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+}
+
+.card-logo-wrap {
+  padding:36px 36px 28px;
+  border-bottom:1px solid rgba(196,168,130,0.07);
+  display:flex; align-items:center; justify-content:center;
+  min-height:130px;
+  background:rgba(255,255,255,0.02);
+}
+
+.card-logo-text {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;
+  letter-spacing:6px;
+  color:var(--stone-cream);
+  text-align:center;
+  line-height:1.1;
+}
+
+.card-logo-sub {
+  font-size:9px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-top:4px;
+  display:block;
+  text-align:center;
+}
+
+.card-meta-list {
+  padding:24px 28px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+.meta-row {
+  padding:10px 0;
+  border-bottom:1px solid rgba(196,168,130,0.06);
+  display:flex; flex-direction:column; gap:3px;
+}
+.meta-row:last-child { border-bottom:none; }
+.meta-k { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--text-muted); }
+.meta-v { font-size:12px; color:var(--stone-sand); line-height:1.4; }
+.meta-v a { color:var(--accent-gold); text-decoration:none; }
+.meta-v a:hover { text-decoration:underline; }
+
+.card-badge-row {
+  padding:16px 28px;
+  display:flex; flex-wrap:wrap; gap:6px;
+  border-top:1px solid rgba(196,168,130,0.07);
+}
+.badge-tag {
+  font-size:8px; letter-spacing:2px; text-transform:uppercase;
+  padding:4px 10px;
+  border:1px solid rgba(196,168,130,0.15);
+  color:var(--text-muted);
+}
+.badge-tag.gold { border-color:rgba(201,168,76,0.35); color:var(--accent-gold); }
+
+/* RIGHT COLUMN */
+.card-right {
+  display:flex; flex-direction:column;
+}
+
+.card-head {
+  padding:36px 44px 24px;
+  border-bottom:1px solid rgba(196,168,130,0.07);
+}
+
+.card-eyebrow {
+  font-size:9px; letter-spacing:4px; text-transform:uppercase;
+  color:var(--accent-gold); margin-bottom:10px;
+  display:flex; align-items:center; gap:10px;
+}
+.card-eyebrow::before { content:''; width:20px; height:1px; background:var(--accent-gold); }
+
+.card-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(32px,3.5vw,48px);
+  font-weight:300; line-height:1; color:var(--stone-cream);
+  margin-bottom:6px;
+}
+
+.card-tagline {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; font-style:italic;
+  color:var(--stone-sand);
+}
+
+.card-body { padding:28px 44px 24px; flex:1; }
+
+.card-desc {
+  font-size:14px; line-height:1.75; color:var(--text-muted);
+  margin-bottom:28px; max-width:620px;
+}
+
+/* Specialties grid */
+.spec-grid {
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:2px;
+  margin-bottom:28px;
+}
+.spec-item {
+  padding:14px 16px;
+  background:rgba(0,0,0,0.2);
+  transition:background .3s;
+}
+.spec-item:hover { background:rgba(201,168,76,0.05); }
+.spec-icon { font-size:18px; margin-bottom:6px; }
+.spec-name { font-size:11px; font-weight:500; color:var(--stone-cream); margin-bottom:3px; }
+.spec-desc { font-size:10px; color:var(--text-muted); line-height:1.4; }
+
+/* Products strip */
+.products-strip {
+  display:flex; gap:2px; margin-bottom:0;
+}
+.prod-item {
+  flex:1; padding:14px 16px;
+  background:rgba(255,255,255,0.02);
+  border-top:1px solid rgba(196,168,130,0.08);
+  position:relative; overflow:hidden;
+}
+.prod-item::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  opacity:0; transition:opacity .3s;
+}
+.prod-item:hover::before { opacity:1; }
+.prod-name { font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--stone-cream); margin-bottom:3px; }
+.prod-type { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); }
+
+/* Card footer */
+.card-footer {
+  padding:18px 44px;
+  background:rgba(0,0,0,0.15);
+  border-top:1px solid rgba(196,168,130,0.07);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.footer-links { display:flex; gap:20px; }
+.footer-link {
+  font-size:10px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--text-muted); text-decoration:none; transition:color .3s;
+  display:flex; align-items:center; gap:6px;
+}
+.footer-link:hover { color:var(--accent-gold); }
+.footer-link::after { content:'→'; transition:transform .3s; }
+.footer-link:hover::after { transform:translateX(4px); }
+.verified-badge {
+  font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--accent-gold);
+  border:1px solid rgba(201,168,76,0.3);
+  padding:5px 12px;
+  display:flex; align-items:center; gap:6px;
+}
+.verified-badge::before { content:'◆'; font-size:7px; }
+
+/* Images gallery strip */
+.img-gallery {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:2px;
+  border-top:1px solid rgba(196,168,130,0.07);
+}
+.img-slot {
+  aspect-ratio:4/3;
+  overflow:hidden;
+  position:relative;
+  background:var(--stone-warm);
+  display:flex; align-items:center; justify-content:center;
+}
+.img-slot img { width:100%; height:100%; object-fit:cover; transition:transform .6s; }
+.img-slot:hover img { transform:scale(1.06); }
+.img-slot-label {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:8px 12px;
+  background:linear-gradient(to top, rgba(20,16,11,0.9), transparent);
+  font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--stone-sand);
+  opacity:0; transition:opacity .3s;
+}
+.img-slot:hover .img-slot-label { opacity:1; }
+/* Placeholder for missing images */
+.img-placeholder {
+  width:100%; height:100%; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px;
+  background:linear-gradient(135deg, var(--stone-mid), var(--stone-warm));
+}
+.img-placeholder-icon { font-size:24px; opacity:0.4; }
+.img-placeholder-text { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); }
+
+/* Color accent per supplier */
+.accent-levantina { --acc:#c9a84c; }
+.accent-antolini   { --acc:#a0b8c0; }
+.accent-tenerife   { --acc:#c87840; }
+
+/* Divider */
+.section-divider {
+  display:flex; align-items:center; gap:20px;
+  padding:0 60px; margin-bottom:40px;
+}
+.div-line { flex:1; height:1px; background:rgba(196,168,130,0.1); }
+.div-label { font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:6px; color:var(--stone-tan); }
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav { padding:16px 20px; }
+  .nav-links { display:none; }
+  .page-header, .suppliers-section { padding-left:20px; padding-right:20px; }
+  .card-inner { grid-template-columns:1fr; }
+  .card-left { border-right:none; border-bottom:1px solid rgba(196,168,130,0.08); }
+  .spec-grid { grid-template-columns:1fr 1fr; }
+  .img-gallery { grid-template-columns:1fr 1fr; }
+  .section-divider { padding:0 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="stone-portal.html" class="logo">LAPID<span>I</span>S</a>
+  <ul class="nav-links">
+    <li><a href="stone-portal.html">Inicio</a></li>
+    <li><a href="lapidis-canteras.html">Canteras</a></li>
+    <li><a href="lapidis-mapa.html">Mapa</a></li>
+    <li><a href="lapidis-proveedores.html" class="active">Proveedores</a></li>
+    <li><a href="#" class="nav-cta">Publicar Perfil</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="eyebrow">Directorio verificado · 3 perfiles destacados</div>
+  <h1 class="page-title">Proveedores<br><em>de referencia</em></h1>
+  <p class="page-desc">Empresas líderes del sector de la piedra natural y artificial con presencia internacional, catálogos verificados y trayectoria contrastada.</p>
+  <div class="page-filters">
+    <button class="pf-btn on" data-f="todos">Todos</button>
+    <button class="pf-btn" data-f="distribuidor">Distribuidor</button>
+    <button class="pf-btn" data-f="fabricante">Fabricante</button>
+    <button class="pf-btn" data-f="exportador">Exportador</button>
+    <button class="pf-btn" data-f="mexico">México</button>
+    <button class="pf-btn" data-f="espana">España</button>
+    <button class="pf-btn" data-f="italia">Italia</button>
+  </div>
+</div>
+
+<div class="suppliers-section">
+
+  <!-- ============================================================
+       LEVANTINA GROUP
+  ============================================================ -->
+  <div class="supplier-card accent-levantina" data-tags="fabricante exportador distribuidor espana">
+    <div class="card-band" style="background:linear-gradient(90deg,#c9a84c,#8b7040,transparent)"></div>
+    <div class="card-inner">
+
+      <!-- LEFT -->
+      <div class="card-left">
+        <div class="card-logo-wrap">
+          <div>
+            <div class="card-logo-text" style="color:#c9a84c;font-size:22px;letter-spacing:4px">LEVANTINA</div>
+            <div class="card-logo-text" style="font-size:13px;letter-spacing:8px;color:var(--stone-sand);margin-top:2px">GROUP</div>
+            <span class="card-logo-sub" style="color:var(--text-muted);margin-top:6px">Since 1959</span>
+          </div>
+        </div>
+        <div class="card-meta-list">
+          <div class="meta-row">
+            <div class="meta-k">Sede</div>
+            <div class="meta-v">Novelda, Alicante · España</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Fundación</div>
+            <div class="meta-v">1959 · +65 años en el sector</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Tipo de empresa</div>
+            <div class="meta-v">Fabricante · Exportador · Distribuidor</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Presencia global</div>
+            <div class="meta-v">+100 países · 19 Stone Centers propios · 8 fábricas</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Plantilla</div>
+            <div class="meta-v">~840 empleados (Grupo)</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Marcas propias</div>
+            <div class="meta-v">Techlam® · Naturamia® · MARMOL® · Pavex®</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Web</div>
+            <div class="meta-v"><a href="https://www.levantina.com" target="_blank">levantina.com ↗</a></div>
+          </div>
+        </div>
+        <div class="card-badge-row">
+          <span class="badge-tag gold">ISO 9001</span>
+          <span class="badge-tag gold">Verificado</span>
+          <span class="badge-tag">España</span>
+          <span class="badge-tag">Premium</span>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card-right">
+        <div class="card-head">
+          <div class="card-eyebrow">España · Líder mundial · Desde 1959</div>
+          <div class="card-name">Levantina Group</div>
+          <div class="card-tagline">Líder mundial en piedra original y sinterizada, controlando la cadena completa desde extracción hasta distribución</div>
+        </div>
+        <div class="card-body">
+          <p class="card-desc">Fundada en 1959 en Novelda (Alicante), Levantina Group es la multinacional española de referencia en el sector de la piedra natural y sinterizada. Controla toda la cadena de valor —desde canteras propias hasta la distribución final— y exporta a más de 100 países a través de 19 Stone Centers propios y una red de distribuidores internacionales. Fue pionera en España con la primera losa de piedra sinterizada (Techlam®, 2007).</p>
+          <div class="spec-grid">
+            <div class="spec-item">
+              <div class="spec-icon">🏔️</div>
+              <div class="spec-name">Mármoles y Calizas</div>
+              <div class="spec-desc">Crema Marfil, colección Mediterranean Stone, losas premium</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">⚡</div>
+              <div class="spec-name">Piedra Sinterizada</div>
+              <div class="spec-desc">Techlam® — primer fabricante español. Formatos hasta 360×160 cm</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">💎</div>
+              <div class="spec-name">Granitos y Cuarcitas</div>
+              <div class="spec-desc">Naturamia® — granitos y cuarcitas de origen Brasil, colección exclusiva</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🏛️</div>
+              <div class="spec-name">Pavimentación Exterior</div>
+              <div class="spec-desc">Pavex® — adoquines y pavimentos urbanos para espacios públicos</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🛁</div>
+              <div class="spec-name">Aplicaciones</div>
+              <div class="spec-desc">Cocinas, baños, fachadas, piscinas, mobiliario, barcos</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🌿</div>
+              <div class="spec-name">Sostenibilidad</div>
+              <div class="spec-desc">Estrategia ESG propia, ODS alineados, auditoría KPMG</div>
+            </div>
+          </div>
+          <div class="products-strip">
+            <div class="prod-item" style="border-top-color:rgba(201,168,76,0.3)">
+              <div class="prod-name">Techlam®</div>
+              <div class="prod-type">Piedra sinterizada</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Naturamia®</div>
+              <div class="prod-type">Granitos & cuarcitas</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Mediterranean Stone</div>
+              <div class="prod-type">Mármol premium</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Pavex®</div>
+              <div class="prod-type">Pavimentación urbana</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="footer-links">
+            <a href="https://www.levantina.com" target="_blank" class="footer-link">Visitar web</a>
+            <a href="https://www.levantina.com/stone-centers/" target="_blank" class="footer-link">Stone Centers</a>
+            <a href="https://www.levantina.com/downloads/" target="_blank" class="footer-link">Catálogos</a>
+          </div>
+          <div class="verified-badge">Perfil verificado</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMAGE GALLERY -->
+    <div class="img-gallery">
+      <div class="img-slot">
+        <div class="img-placeholder">
+          <div class="img-placeholder-icon">🏗️</div>
+          <div class="img-placeholder-text">Proyectos exteriores</div>
+        </div>
+        <span class="img-slot-label">Proyectos exteriores</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder">
+          <div class="img-placeholder-icon">🪨</div>
+          <div class="img-placeholder-text">Crema Marfil DOP</div>
+        </div>
+        <span class="img-slot-label">Crema Marfil DOP</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder">
+          <div class="img-placeholder-icon">⚡</div>
+          <div class="img-placeholder-text">Techlam® Sinterizada</div>
+        </div>
+        <span class="img-slot-label">Techlam® Sinterizada</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder">
+          <div class="img-placeholder-icon">💎</div>
+          <div class="img-placeholder-text">Naturamia® Brasil</div>
+        </div>
+        <span class="img-slot-label">Naturamia® Brasil</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       ANTOLINI
+  ============================================================ -->
+  <div class="supplier-card accent-antolini" data-tags="fabricante exportador italia">
+    <div class="card-band" style="background:linear-gradient(90deg,#a0b8c0,#607880,transparent)"></div>
+    <div class="card-inner">
+
+      <!-- LEFT -->
+      <div class="card-left">
+        <div class="card-logo-wrap" style="background:rgba(0,0,0,0.3)">
+          <div>
+            <div class="card-logo-text" style="font-size:30px;letter-spacing:3px;font-family:'Cormorant Garamond',serif;font-weight:300;color:#e8e4dc">Antolini</div>
+            <div style="width:60px;height:1px;background:rgba(160,184,192,0.4);margin:8px auto"></div>
+            <span class="card-logo-sub">Haute Nature® · Dal 1956</span>
+          </div>
+        </div>
+        <div class="card-meta-list">
+          <div class="meta-row">
+            <div class="meta-k">Sede</div>
+            <div class="meta-v">Sant'Ambrogio di Valpolicella, Verona · Italia</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Fundación</div>
+            <div class="meta-v">1956 por Luigi Antolini · Empresa familiar 3ª generación</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Tipo de empresa</div>
+            <div class="meta-v">Fabricante de lujo · Exportador global</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Catálogo</div>
+            <div class="meta-v">+1.300 tipos de piedra natural · 14 colecciones</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Producción</div>
+            <div class="meta-v">4.500 m² de losas/día · ~1.000.000 m²/año</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Presencia global</div>
+            <div class="meta-v">182 países · Centros en Italia y Brasil</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Web</div>
+            <div class="meta-v"><a href="https://www.antolini.com/es/" target="_blank">antolini.com ↗</a></div>
+          </div>
+        </div>
+        <div class="card-badge-row">
+          <span class="badge-tag gold">Haute Nature®</span>
+          <span class="badge-tag gold">Verificado</span>
+          <span class="badge-tag">Italia</span>
+          <span class="badge-tag">Ultra Premium</span>
+          <span class="badge-tag">182 países</span>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card-right">
+        <div class="card-head">
+          <div class="card-eyebrow" style="color:#a0b8c0">Italia · Ultra Premium · Desde 1956</div>
+          <div class="card-name">Antolini®</div>
+          <div class="card-tagline" style="color:#b8c8cc">Designed by Nature, Perfected in Italy — la mayor colección de piedra natural de lujo del mundo</div>
+        </div>
+        <div class="card-body">
+          <p class="card-desc">Fundada en 1956 en Verona por Luigi Antolini, hoy dirigida por sus hijos Alberto, Alessandra y Francesco. Antolini es el curador de las obras maestras más deseadas de la Madre Naturaleza: más de 1.300 tipos de piedra en 14 colecciones temáticas, con derechos exclusivos sobre las piezas más raras del mundo. Sus tecnologías propias —Azerocare Plus®, Azerobact Plus®, Allight®— sitúan la empresa a la vanguardia de la innovación en tratamiento de piedra natural de lujo.</p>
+          <div class="spec-grid">
+            <div class="spec-item">
+              <div class="spec-icon">👑</div>
+              <div class="spec-name">Exclusive Collection</div>
+              <div class="spec-desc">Materiales extraordinarios con derechos exclusivos. Los más cotizados del mercado</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">💎</div>
+              <div class="spec-name">Precioustone®</div>
+              <div class="spec-desc">Piedras semipreciosas, ónix retroiluminado, amatistas y gemas</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">✨</div>
+              <div class="spec-name">Twinlight®</div>
+              <div class="spec-desc">Losas translúcidas retroiluminadas. Efecto espectacular en interiores</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🔬</div>
+              <div class="spec-name">Tecnologías propias</div>
+              <div class="spec-desc">Azerocare Plus® · Azerobact Plus® · Allight® · AVP® patentadas</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🌿</div>
+              <div class="spec-name">Shellstone & Woodstone</div>
+              <div class="spec-desc">Colecciones con fósiles marinos y texturas de madera en piedra natural</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🏛️</div>
+              <div class="spec-name">StoneRoom® Milano</div>
+              <div class="spec-desc">Flagship showroom en el Duomo de Milán — experiencia inmersiva</div>
+            </div>
+          </div>
+          <div class="products-strip">
+            <div class="prod-item" style="border-top-color:rgba(160,184,192,0.4)">
+              <div class="prod-name">Exclusive Collection</div>
+              <div class="prod-type">Lujo · Exclusivo</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Precioustone®</div>
+              <div class="prod-type">Gemas & semipreciosas</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Twinlight®</div>
+              <div class="prod-type">Translúcido retroiluminado</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Natural Stone</div>
+              <div class="prod-type">+1.300 materiales</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="footer-links">
+            <a href="https://www.antolini.com/es/" target="_blank" class="footer-link">Visitar web</a>
+            <a href="https://www.antolini.com/es/localizador-de-tiendas" target="_blank" class="footer-link">Localizador tiendas</a>
+            <a href="https://www.antolini.com/es/c3/exclusive-collection" target="_blank" class="footer-link">Exclusive Collection</a>
+          </div>
+          <div class="verified-badge" style="border-color:rgba(160,184,192,0.35);color:#a0b8c0">Perfil verificado</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="img-gallery">
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#1a2025,#252e32)">
+          <div class="img-placeholder-icon">👑</div>
+          <div class="img-placeholder-text">Exclusive Collection</div>
+        </div>
+        <span class="img-slot-label">Exclusive Collection</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#1a2520,#202e28)">
+          <div class="img-placeholder-icon">✨</div>
+          <div class="img-placeholder-text">Twinlight® retroiluminado</div>
+        </div>
+        <span class="img-slot-label">Twinlight® retroiluminado</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#201520,#2a1e2a)">
+          <div class="img-placeholder-icon">💎</div>
+          <div class="img-placeholder-text">Precioustone®</div>
+        </div>
+        <span class="img-slot-label">Precioustone®</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#1e1a14,#28231a)">
+          <div class="img-placeholder-icon">🏛️</div>
+          <div class="img-placeholder-text">StoneRoom® Milano</div>
+        </div>
+        <span class="img-slot-label">StoneRoom® Milano</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       GRUPO TENERIFE
+  ============================================================ -->
+  <div class="supplier-card accent-tenerife" data-tags="distribuidor mexico">
+    <div class="card-band" style="background:linear-gradient(90deg,#c87840,#804820,transparent)"></div>
+    <div class="card-inner">
+
+      <!-- LEFT -->
+      <div class="card-left">
+        <div class="card-logo-wrap" style="background:rgba(180,100,40,0.08)">
+          <div>
+            <div class="card-logo-text" style="color:#c87840;font-size:18px;letter-spacing:3px">GRUPO</div>
+            <div class="card-logo-text" style="font-size:26px;letter-spacing:5px;color:var(--stone-cream)">TENERIFE</div>
+            <span class="card-logo-sub" style="color:var(--text-muted)">Recubrimientos · México</span>
+          </div>
+        </div>
+        <div class="card-meta-list">
+          <div class="meta-row">
+            <div class="meta-k">Sede</div>
+            <div class="meta-v">México · Presencia nacional</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Trayectoria</div>
+            <div class="meta-v">+30 años en recubrimientos y superficies</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Tipo de empresa</div>
+            <div class="meta-v">Distribuidor premium · Importador</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Especialidad</div>
+            <div class="meta-v">Superficies naturales y tecnológicas para proyectos de interiorismo</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Plataforma e-commerce</div>
+            <div class="meta-v"><a href="https://selektia.mx" target="_blank">selektia.mx ↗</a> — tienda online</div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-k">Web</div>
+            <div class="meta-v"><a href="https://www.grupotenerife.com.mx" target="_blank">grupotenerife.com.mx ↗</a></div>
+          </div>
+        </div>
+        <div class="card-badge-row">
+          <span class="badge-tag gold">Verificado</span>
+          <span class="badge-tag">México</span>
+          <span class="badge-tag">Distribuidor</span>
+          <span class="badge-tag">+30 años</span>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card-right">
+        <div class="card-head">
+          <div class="card-eyebrow" style="color:#c87840">México · Distribuidor Premium · +30 años</div>
+          <div class="card-name">Grupo Tenerife</div>
+          <div class="card-tagline" style="color:#c4a070">Recubrimientos que inspiran espacios únicos — superficies naturales y tecnológicas de calidad europea</div>
+        </div>
+        <div class="card-body">
+          <p class="card-desc">Con más de 30 años de trayectoria en el mercado mexicano, Grupo Tenerife se ha consolidado como distribuidor de referencia de superficies premium para arquitectos, interioristas y proyectos residenciales y comerciales de alta gama. Ofrece un catálogo integral que abarca desde piedras naturales hasta las soluciones tecnológicas más avanzadas del mercado europeo, disponibles también a través de su plataforma digital Selektia.</p>
+          <div class="spec-grid">
+            <div class="spec-item">
+              <div class="spec-icon">🪨</div>
+              <div class="spec-name">Piedras Naturales</div>
+              <div class="spec-desc">Mármoles, granitos y cuarcitas seleccionados. Titanium Leather, Calacatta Macchia Vecchia</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">✨</div>
+              <div class="spec-name">Porcelanatos</div>
+              <div class="spec-desc">Colección premium de gran formato para proyectos residenciales y comerciales</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🌲</div>
+              <div class="spec-name">Pisos de Madera</div>
+              <div class="spec-desc">Parquet europeo certificado, madera ingeniería y vinílicos SPC de alta resistencia</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🏡</div>
+              <div class="spec-name">Decks & WPC</div>
+              <div class="spec-desc">Bamboo X-Treme, WPC para exteriores, albercas y terrazas</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🪵</div>
+              <div class="spec-name">Tableros & Paneles</div>
+              <div class="spec-desc">Paneles premium Alvic, tableros de cocina y revestimientos de pared</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🛍️</div>
+              <div class="spec-name">Selektia · E-Commerce</div>
+              <div class="spec-desc">Plataforma digital para compra online de todo el catálogo con entrega en México</div>
+            </div>
+          </div>
+          <div class="products-strip">
+            <div class="prod-item" style="border-top-color:rgba(200,120,64,0.4)">
+              <div class="prod-name">Piedras Naturales</div>
+              <div class="prod-type">Mármol · Granito · Cuarcita</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Porcelanatos</div>
+              <div class="prod-type">Gran formato · Premium</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Pisos de Madera</div>
+              <div class="prod-type">Europeo certificado</div>
+            </div>
+            <div class="prod-item">
+              <div class="prod-name">Decks & WPC</div>
+              <div class="prod-type">Exterior · Albercas</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="footer-links">
+            <a href="https://www.grupotenerife.com.mx" target="_blank" class="footer-link">Visitar web</a>
+            <a href="https://selektia.mx" target="_blank" class="footer-link">Tienda Selektia</a>
+            <a href="https://www.grupotenerife.com.mx/materiales" target="_blank" class="footer-link">Ver catálogo</a>
+          </div>
+          <div class="verified-badge" style="border-color:rgba(200,120,64,0.35);color:#c87840">Perfil verificado</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="img-gallery">
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#201408,#2e1c0c)">
+          <div class="img-placeholder-icon">🪨</div>
+          <div class="img-placeholder-text">Piedras naturales</div>
+        </div>
+        <span class="img-slot-label">Piedras naturales</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#161c20,#1e2830)">
+          <div class="img-placeholder-icon">✨</div>
+          <div class="img-placeholder-text">Porcelanatos premium</div>
+        </div>
+        <span class="img-slot-label">Porcelanatos premium</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#1a1408,#261e10)">
+          <div class="img-placeholder-icon">🌲</div>
+          <div class="img-placeholder-text">Pisos de madera</div>
+        </div>
+        <span class="img-slot-label">Pisos de madera</span>
+      </div>
+      <div class="img-slot">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#0e1a12,#141e18)">
+          <div class="img-placeholder-icon">🏡</div>
+          <div class="img-placeholder-text">Decks & exteriores</div>
+        </div>
+        <span class="img-slot-label">Decks & exteriores</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /suppliers-section -->
+
+<script>
+document.querySelectorAll('.pf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const f = btn.dataset.f;
+    document.querySelectorAll('.supplier-card').forEach(card => {
+      const tags = card.dataset.tags || '';
+      if (f === 'todos' || tags.includes(f)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
