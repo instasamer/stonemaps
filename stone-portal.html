@@ -1132,12 +1132,10 @@
 <nav>
   <a href="stone-portal.html" style="text-decoration:none"><div class="logo">LAPID<span>I</span>S</div></a>
   <ul class="nav-links">
+    <li><a href="stone-portal.html">Inicio</a></li>
     <li><a href="lapidis-canteras.html">Canteras</a></li>
     <li><a href="lapidis-mapa.html">Mapa</a></li>
     <li><a href="lapidis-proveedores.html">Proveedores</a></li>
-    <li><a href="#">Fabricantes</a></li>
-    <li><a href="#">Arquitectura</a></li>
-    <li><a href="#">Maquinaria</a></li>
     <li><a href="#" class="nav-cta">Publicar Perfil</a></li>
   </ul>
 </nav>
@@ -1156,8 +1154,8 @@
     <span class="hero-title-accent">del sector</span>
     <p class="hero-sub">La plataforma de referencia para profesionales de la piedra natural y artificial. Canteras, proveedores, distribuidores, fabricantes y arquitectos en un único ecosistema.</p>
     <div class="hero-actions">
-      <a href="#" class="btn-primary">Publicar mi empresa</a>
-      <a href="#" class="btn-secondary">Explorar directorio</a>
+      <a href="lapidis-proveedores.html" class="btn-primary">Publicar mi empresa</a>
+      <a href="lapidis-canteras.html" class="btn-secondary">Explorar directorio</a>
     </div>
   </div>
   <div class="hero-stats">
@@ -1215,7 +1213,7 @@
     <p class="categories-desc">La información más extensa del mundo de la piedra, estructurada en categorías claras para que encuentres exactamente lo que buscas sin esfuerzo.</p>
   </div>
   <div class="cat-grid">
-    <div class="cat-card">
+    <a href="lapidis-canteras.html" style="text-decoration:none;display:block" class="cat-card">
       <div class="cat-card-inner">
         <span class="cat-number">01</span>
         <span class="cat-icon">⛏️</span>
@@ -1224,8 +1222,8 @@
         <div class="cat-count">4.800+ canteras · 89 países</div>
         <div class="cat-arrow">→</div>
       </div>
-    </div>
-    <div class="cat-card">
+    </a>
+    <a href="lapidis-proveedores.html" style="text-decoration:none;display:block" class="cat-card">
       <div class="cat-card-inner">
         <span class="cat-number">02</span>
         <span class="cat-icon">🏗️</span>
@@ -1234,7 +1232,7 @@
         <div class="cat-count">1.200+ proveedores</div>
         <div class="cat-arrow">→</div>
       </div>
-    </div>
+    </a>
     <div class="cat-card">
       <div class="cat-card-inner">
         <span class="cat-number">03</span>
@@ -1296,7 +1294,9 @@
 <section class="quarries">
   <div class="quarry-layout">
     <div class="quarry-map-visual">
-      <div class="world-map-placeholder">
+      <a href="lapidis-mapa.html" style="text-decoration:none;display:block;cursor:pointer" title="Ver mapa completo de canteras">
+      <div class="world-map-placeholder" style="position:relative">
+        <div style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(26,22,18,0.85);border:1px solid rgba(201,168,76,0.35);padding:7px 14px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-gold);backdrop-filter:blur(8px)">Ver mapa completo →</div>
         <!-- Simulated quarry location dots across the world -->
         <div class="map-dot" style="top:32%;left:38%">
           <div class="map-label">Italia</div>
@@ -1332,6 +1332,7 @@
         <div style="position:absolute;bottom:20px;right:20px;font-family:'Bebas Neue',sans-serif;font-size:48px;color:rgba(196,168,130,0.06);letter-spacing:4px;line-height:1">WORLD<br>QUARRIES</div>
         <div style="position:absolute;bottom:20px;left:20px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted)">4.800+ canteras localizadas</div>
       </div>
+      </a>
     </div>
     <div class="quarry-content">
       <div class="section-eyebrow">Canteras del mundo</div>
@@ -1356,6 +1357,10 @@
         <div class="quarry-feat">
           <div class="quarry-feat-title">Filtros avanzados de búsqueda</div>
           <div class="quarry-feat-desc">Por país, tipo de roca, color, uso recomendado, certificaciones y disponibilidad.</div>
+        </div>
+        <div style="margin-top:32px;display:flex;gap:12px;flex-wrap:wrap">
+          <a href="lapidis-canteras.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--accent-gold);color:var(--stone-dark);font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-family:'DM Sans',sans-serif;transition:opacity .3s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Ver directorio de canteras →</a>
+          <a href="lapidis-mapa.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border:1px solid rgba(196,168,130,0.25);color:var(--stone-sand);font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-family:'DM Sans',sans-serif;transition:all .3s" onmouseover="this.style.borderColor='var(--accent-gold)';this.style.color='var(--accent-gold)'" onmouseout="this.style.borderColor='rgba(196,168,130,0.25)';this.style.color='var(--stone-sand)'">Ver mapa interactivo →</a>
         </div>
       </div>
     </div>
@@ -1490,7 +1495,7 @@
     <div>
       <div class="footer-col-title">Directorio</div>
       <ul class="footer-links">
-        <li><a href="#">Canteras del mundo</a></li>
+        <li><a href="lapidis-canteras.html">Canteras del mundo</a></li>
         <li><a href="lapidis-proveedores.html">Proveedores</a></li>
         <li><a href="#">Fabricantes</a></li>
         <li><a href="#">Distribuidores</a></li>
@@ -1529,6 +1534,116 @@
     </div>
   </div>
 </footer>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+(function() {
+  const SPOTS = [
+    [10.12,44.07,1],[10.09,44.09,1],[12.79,41.97,1],[8.45,45.92,1],
+    [-0.77,38.39,1],[-2.28,37.35,1],[-7.10,42.30,2],[27.59,40.62,1],
+    [29.09,37.77,1],[30.54,38.75,2],[23.89,38.05,1],[24.70,40.69,1],
+    [25.15,37.08,1],[-7.59,38.84,1],[4.52,47.08,1],[3.95,50.48,2],
+    [10.07,59.04,1],[-2.44,50.55,1],[-4.02,53.20,1],[9.18,46.62,2],
+    [74.73,27.04,1],[77.60,14.46,1],[78.02,27.17,2],[115.98,39.73,1],
+    [119.30,25.44,2],[48.35,33.49,1],[54.37,31.90,2],[106.93,-6.92,1],
+    [70.80,37.48,1],[32.90,24.09,1],[32.56,28.55,2],[8.57,36.51,1],
+    [29.80,-19.00,2],[-107.02,38.94,1],[-72.50,44.20,1],[-72.79,41.31,1],
+    [-44.55,-18.51,1],[-96.42,50.09,2],[-97.70,18.73,2],[60.95,54.10,1],
+    [60.68,56.48,2],[28.65,50.10,2],[44.51,40.18,2],[172.80,-40.85,3],
+    [134.12,34.39,2],[-56.96,-30.40,3]
+  ];
+
+  const svg = d3.select('#minimap-svg');
+  const W = 800, H = 400;
+
+  const proj = d3.geoNaturalEarth1()
+    .scale(130)
+    .translate([W/2, H/2 + 16]);
+  const path = d3.geoPath().projection(proj);
+
+  const g = svg.append('g');
+
+  // Ocean
+  g.append('path')
+    .datum({type:'Sphere'})
+    .attr('d', path)
+    .attr('fill', '#0d0b08');
+
+  // Graticule
+  g.append('path')
+    .datum(d3.geoGraticule()())
+    .attr('d', path)
+    .attr('fill','none')
+    .attr('stroke','rgba(196,168,130,0.04)')
+    .attr('stroke-width',0.4);
+
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r => r.json())
+    .then(world => {
+      g.selectAll('path.country')
+        .data(topojson.feature(world, world.objects.countries).features)
+        .join('path')
+        .attr('class','country')
+        .attr('d', path)
+        .attr('fill','#1e1a12')
+        .attr('stroke','rgba(196,168,130,0.1)')
+        .attr('stroke-width',0.3);
+
+      // Quarry dots
+      SPOTS.forEach(([lng, lat, tier], i) => {
+        const coords = proj([lng, lat]);
+        if (!coords) return;
+        const [x, y] = coords;
+        const r = tier === 1 ? 3.5 : tier === 2 ? 2.3 : 1.6;
+        const col = tier === 1 ? '#c9a84c' : tier === 2 ? '#9a7238' : '#5a4828';
+        const delay = ((i * 0.8) % 3).toFixed(1);
+
+        // Pulse
+        const ring = g.append('circle')
+          .attr('cx', x).attr('cy', y).attr('r', r)
+          .attr('fill','none')
+          .attr('stroke', col)
+          .attr('stroke-width', 0.7)
+          .style('transform-origin', `${x}px ${y}px`);
+
+        // Animate pulse with CSS
+        ring.attr('class','mini-pulse').style('animation-delay', delay+'s');
+
+        // Core
+        g.append('circle')
+          .attr('cx', x).attr('cy', y).attr('r', r)
+          .attr('fill', col)
+          .attr('opacity', 0.9);
+      });
+    });
+
+  // Hover effect
+  const wrap = document.querySelector('a[href="lapidis-mapa.html"]');
+  const overlay = document.getElementById('minimap-overlay');
+  const cta = document.getElementById('minimap-cta');
+  if (wrap && overlay) {
+    wrap.addEventListener('mouseenter', () => {
+      overlay.style.background = 'rgba(13,11,8,0.45)';
+      cta.style.opacity = '1';
+    });
+    wrap.addEventListener('mouseleave', () => {
+      overlay.style.background = 'rgba(13,11,8,0)';
+      cta.style.opacity = '0';
+    });
+  }
+})();
+</script>
+<style>
+.mini-pulse {
+  animation: miniPulse 3s ease-out infinite;
+}
+@keyframes miniPulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(3);   opacity: 0; }
+}
+</style>
 
 </body>
 </html>
