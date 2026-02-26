@@ -6,6 +6,27 @@
 <title>World Stone Hub — Portal Mundial de la Piedra</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 8px;
+    color: var(--stone-cream);
+    text-decoration: none;
+    display: block;
+  }
+  .logo span {
+    color: var(--accent-gold);
+  }
+  .logo-main { display: block; }
+  .logo-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
   :root {
     --stone-dark: #1a1612;
     --stone-mid: #2e2820;
@@ -53,13 +74,6 @@
     align-items: center;
     background: linear-gradient(to bottom, rgba(26,22,18,0.95), transparent);
     backdrop-filter: blur(2px);
-  }
-
-  .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    letter-spacing: 8px;
-    color: var(--stone-cream);
   }
 
   .logo span {
@@ -1047,7 +1061,7 @@
     margin-bottom: 40px;
   }
 
-  .footer-brand .logo { margin-bottom: 20px; display: block; }
+  .footer-brand
 
   .footer-desc {
     font-size: 13px;
@@ -1212,68 +1226,7 @@
   </div>
 </div>
 
-<!-- CATEGORIES -->
-<section class="categories">
-  <div class="categories-header">
-    <div>
-      <div class="section-eyebrow">Directorio completo</div>
-      <h2 class="section-title">Todo el sector,<br><em>organizado</em></h2>
-    </div>
-    <p class="categories-desc">La información más extensa del mundo de la piedra, estructurada en categorías claras para que encuentres exactamente lo que buscas sin esfuerzo.</p>
-  </div>
-  <div class="cat-grid">
-    <a href="lapidis-canteras.html" style="text-decoration:none;display:block" class="cat-card">
-      <div class="cat-card-inner">
-        <span class="cat-number">01</span>
-        <span class="cat-icon">⛏️</span>
-        <div class="cat-name">Canteras del Mundo</div>
-        <p class="cat-desc">Todas las canteras de piedra natural organizadas por país, región y tipo de material. Fichas detalladas con características técnicas y de extracción.</p>
-        <div class="cat-count">4.800+ canteras · 89 países</div>
-        <div class="cat-arrow">→</div>
-      </div>
-    </a>
-    <a href="lapidis-proveedores.html" style="text-decoration:none;display:block" class="cat-card">
-      <div class="cat-card-inner">
-        <span class="cat-number">02</span>
-        <span class="cat-icon">🏗️</span>
-        <div class="cat-name">Proveedores</div>
-        <p class="cat-desc">Directorio verificado de proveedores mayoristas con catálogos y certificaciones.</p>
-        <div class="cat-count">1.200+ proveedores</div>
-        <div class="cat-arrow">→</div>
-      </div>
-    </a>
-    <div class="cat-card">
-      <div class="cat-card-inner">
-        <span class="cat-number">03</span>
-        <span class="cat-icon">🏭</span>
-        <div class="cat-name">Fabricantes</div>
-        <p class="cat-desc">Talleres y fábricas de transformación con maquinaria, capacidades y acabados disponibles.</p>
-        <div class="cat-count">850+ fabricantes</div>
-        <div class="cat-arrow">→</div>
-      </div>
-    </div>
-    <div class="cat-card">
-      <div class="cat-card-inner">
-        <span class="cat-number">04</span>
-        <span class="cat-icon">🏛️</span>
-        <div class="cat-name">Arquitectura & Diseño</div>
-        <p class="cat-desc">Estudios especializados en proyectos con piedra natural, constructoras y empresas de instalación.</p>
-        <div class="cat-count">600+ estudios</div>
-        <div class="cat-arrow">→</div>
-      </div>
-    </div>
-    <div class="cat-card">
-      <div class="cat-card-inner">
-        <span class="cat-number">05</span>
-        <span class="cat-icon">⚙️</span>
-        <div class="cat-name">Maquinaria & Herramienta</div>
-        <p class="cat-desc">Vendedores y fabricantes de maquinaria especializada para corte, acabado y extracción.</p>
-        <div class="cat-count">400+ empresas</div>
-        <div class="cat-arrow">→</div>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- MEMBERSHIP -->
 
 <!-- SEARCH PREVIEW -->
 <div class="search-preview">
