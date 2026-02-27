@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Alta Profesional · World Stone Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   WORLD STONE HUB — REGISTRO PROFESIONAL
+═══════════════════════════════════════════════ */
+:root {
+  --dark:   #120f0c;
+  --mid:    #1e1a15;
+  --warm:   #2a241c;
+  --tan:    #6b5640;
+  --sand:   #b89870;
+  --cream:  #ede5d8;
+  --white:  #f8f4ef;
+  --gold:   #c9a84c;
+  --gold2:  #e8c87a;
+  --muted:  #7a6a56;
+  --border: rgba(185,152,112,0.12);
+  --border2:rgba(185,152,112,0.22);
+  --green:  #4a7a5a;
+  --red:    #7a3a3a;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
+body {
+  background: var(--dark);
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:800;
+  height:64px; padding:0 60px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(18,15,12,0.92);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:7px; color:var(--cream); text-decoration:none; display:flex; flex-direction:column; gap:1px; }
+.logo-hub { color:var(--gold); }
+.logo-sub { font-family:'DM Sans',sans-serif; font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--muted); }
+.nav-back { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); text-decoration:none; display:flex; align-items:center; gap:8px; transition:color 0.2s; }
+.nav-back::before { content:'←'; font-size:14px; }
+.nav-back:hover { color:var(--sand); }
+
+/* ── OUTER SHELL ── */
+.shell {
+  display:grid;
+  grid-template-columns:340px 1fr;
+  min-height:100vh;
+  padding-top:64px;
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar {
+  background: var(--mid);
+  border-right:1px solid var(--border);
+  padding:60px 40px;
+  position:sticky; top:64px; height:calc(100vh - 64px);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+.sidebar-stone-bg {
+  position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(ellipse 120% 60% at 80% 110%, rgba(201,168,76,0.04) 0%, transparent 60%);
+}
+.sidebar-eyebrow {
+  font-size:8px; letter-spacing:5px; text-transform:uppercase; color:var(--gold); margin-bottom:20px;
+}
+.sidebar-title {
+  font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:300; color:var(--white); line-height:1.1; margin-bottom:8px;
+}
+.sidebar-title em { color:var(--gold); font-style:italic; display:block; }
+.sidebar-sub { font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:48px; }
+
+/* Step list in sidebar */
+.step-list { display:flex; flex-direction:column; gap:0; position:relative; }
+.step-list::before {
+  content:''; position:absolute; left:15px; top:20px; bottom:20px; width:1px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  opacity:0.2;
+}
+.step-row {
+  display:flex; align-items:flex-start; gap:16px; padding:14px 0;
+  transition:all 0.3s; cursor:default;
+}
+.step-dot {
+  width:30px; height:30px; border-radius:50%; flex-shrink:0;
+  border:1px solid var(--border2); background:var(--warm);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; color:var(--muted); transition:all 0.4s; z-index:1;
+  font-family:'DM Sans',sans-serif; font-weight:500;
+}
+.step-row.active .step-dot {
+  border-color:var(--gold); background:rgba(201,168,76,0.1); color:var(--gold);
+  box-shadow:0 0 16px rgba(201,168,76,0.15);
+}
+.step-row.done .step-dot {
+  border-color:var(--green); background:var(--green); color:var(--dark);
+  font-size:13px;
+}
+.step-row.done .step-dot::after { content:'✓'; }
+.step-row.done .step-num { display:none; }
+.step-info { padding-top:4px; }
+.step-name {
+  font-size:12px; font-weight:500; letter-spacing:1px; color:var(--muted); transition:color 0.3s;
+}
+.step-row.active .step-name { color:var(--cream); }
+.step-row.done .step-name  { color:var(--muted); }
+.step-desc { font-size:10px; color:var(--muted); margin-top:3px; opacity:0; transition:opacity 0.3s; letter-spacing:0.3px; }
+.step-row.active .step-desc { opacity:1; color:var(--sand); }
+
+/* Sidebar plan badge (shows after step 1) */
+.sidebar-plan-badge {
+  margin-top:auto; padding:20px; background:var(--warm);
+  border:1px solid var(--border2); display:none;
+}
+.sidebar-plan-badge.show { display:block; }
+.spb-label { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.spb-name { font-family:'Cormorant Garamond',serif; font-size:26px; color:var(--gold); line-height:1; }
+.spb-price { font-size:11px; color:var(--sand); margin-top:4px; letter-spacing:1px; }
+.spb-actors { font-size:10px; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px solid var(--border); line-height:1.6; }
+
+/* ── MAIN CONTENT ── */
+.main {
+  padding:60px 80px 100px;
+  max-width:900px;
+}
+@media(max-width:1100px){ .main{ padding:60px 48px 100px; } }
+
+/* ── SCREENS ── */
+.screen { display:none; }
+.screen.active {
+  display:block;
+  animation: screenIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes screenIn {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.screen-eyebrow { font-size:9px; letter-spacing:5px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+.screen-title { font-family:'Cormorant Garamond',serif; font-size:clamp(32px,3.5vw,50px); font-weight:300; color:var(--white); line-height:1.1; margin-bottom:10px; }
+.screen-title em { color:var(--gold); font-style:italic; }
+.screen-desc { font-size:13px; color:var(--muted); line-height:1.8; max-width:520px; margin-bottom:52px; }
+.screen-desc a { color:var(--gold); text-decoration:none; }
+
+/* ════════════════════════
+   STEP 1 — PLAN
+════════════════════════ */
+.plans-grid {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:2px; margin-bottom:2px;
+}
+@media(max-width:800px){ .plans-grid { grid-template-columns:repeat(2,1fr); } }
+
+.plan-card {
+  background:var(--mid); border:2px solid transparent;
+  padding:28px 22px 24px; cursor:pointer;
+  transition:background 0.25s, border-color 0.25s, transform 0.2s;
+  position:relative; display:flex; flex-direction:column; gap:0;
+  user-select:none;
+}
+.plan-card:hover { background:var(--warm); border-color:rgba(185,152,112,0.2); transform:translateY(-2px); }
+.plan-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.04); transform:translateY(-2px); }
+.plan-card.selected .plan-check { opacity:1; transform:scale(1); }
+.plan-check {
+  position:absolute; top:14px; right:14px;
+  width:20px; height:20px; background:var(--gold); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; color:var(--dark); font-weight:700;
+  opacity:0; transform:scale(0.5); transition:all 0.25s;
+}
+.plan-popular {
+  position:absolute; top:-1px; left:0; right:0; text-align:center;
+  background:var(--gold); color:var(--dark);
+  font-size:8px; letter-spacing:3px; text-transform:uppercase;
+  padding:5px; font-family:'DM Sans',sans-serif; font-weight:500;
+}
+.plan-tag {
+  font-size:8px; letter-spacing:4px; text-transform:uppercase; margin-bottom:14px; margin-top:4px;
+}
+.t-free { color:#6a9a7a; } .t-base { color:var(--sand); } .t-pro { color:var(--gold); } .t-elite { color:var(--gold2); }
+.plan-name { font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--white); margin-bottom:4px; }
+.plan-price-line { display:flex; align-items:baseline; gap:3px; margin-bottom:2px; }
+.plan-price { font-family:'Cormorant Garamond',serif; font-size:42px; line-height:1; color:var(--gold); }
+.plan-price sup { font-size:18px; vertical-align:super; }
+.plan-pm { font-size:11px; color:var(--muted); }
+.plan-billing { font-size:9px; color:var(--muted); letter-spacing:1px; margin-bottom:20px; }
+.plan-divider { height:1px; background:var(--border); margin:0 0 18px; }
+.plan-feats { list-style:none; display:flex; flex-direction:column; gap:8px; flex:1; }
+.plan-feats li {
+  font-size:11px; color:var(--sand); display:flex; align-items:flex-start; gap:7px; line-height:1.4;
+}
+.plan-feats li .fi { color:var(--gold); flex-shrink:0; font-size:9px; margin-top:2px; }
+.plan-feats li.off { color:var(--muted); }
+.plan-feats li.off .fi { color:var(--muted); }
+
+/* Comparison table */
+.compare-wrap {
+  background:var(--mid); border:1px solid var(--border);
+  padding:24px 28px; margin-top:2px;
+}
+.compare-hd { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+.compare-row {
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr;
+  gap:4px; padding:8px 0; border-bottom:1px solid rgba(185,152,112,0.05);
+  font-size:11px; align-items:center;
+}
+.compare-row:last-child { border:none; }
+.compare-row.hd { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+.cf { color:var(--sand); }
+.cv { text-align:center; color:var(--muted); font-size:11px; }
+.cv.y { color:#6aaa7a; } .cv.n { color:rgba(122,106,86,0.3); } .cv.g { color:var(--gold); font-weight:500; }
+
+/* ════════════════════════
+   STEP 2 — ACTOR TYPE
+════════════════════════ */
+.actors-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:2px; margin-bottom:12px;
+}
+@media(max-width:720px){ .actors-grid{ grid-template-columns:repeat(2,1fr); } }
+
+.actor-card {
+  background:var(--mid); border:2px solid transparent;
+  padding:24px 20px; cursor:pointer;
+  transition:all 0.22s; user-select:none; position:relative;
+}
+.actor-card:hover { background:var(--warm); border-color:rgba(185,152,112,0.2); }
+.actor-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.04); }
+.actor-card.selected .ac-check { opacity:1; }
+.ac-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.ac-icon { font-size:20px; line-height:1; }
+.ac-check {
+  width:18px; height:18px; background:var(--gold); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:var(--dark); font-weight:700; opacity:0;
+  transition:opacity 0.2s; flex-shrink:0;
+}
+.ac-name { font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--white); margin-bottom:5px; }
+.ac-desc { font-size:11px; color:var(--muted); line-height:1.6; }
+
+.multi-note { font-size:11px; color:var(--muted); margin-bottom:40px; }
+.multi-note span { color:var(--gold); }
+.actor-counter { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+
+/* ════════════════════════
+   STEP 3 — FORM
+════════════════════════ */
+.fsections { display:flex; flex-direction:column; gap:40px; }
+
+.fsec {}
+.fsec-hd {
+  font-size:9px; letter-spacing:5px; text-transform:uppercase; color:var(--gold);
+  padding-bottom:14px; margin-bottom:20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.fsec-hd::before { content:'◆'; font-size:7px; }
+
+.fgrid { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.fgrid.g1 { grid-template-columns:1fr; }
+.fgrid.g3 { grid-template-columns:1fr 1fr 1fr; }
+@media(max-width:700px){ .fgrid,.fgrid.g3 { grid-template-columns:1fr; } }
+
+.field {
+  background:var(--mid); padding:14px 16px;
+  border:1px solid transparent; transition:border-color 0.2s;
+  display:flex; flex-direction:column; gap:6px; position:relative;
+}
+.field:focus-within { border-color:rgba(201,168,76,0.3); }
+.field.err { border-color:rgba(160,70,70,0.5); }
+.field.locked { opacity:0.38; pointer-events:none; }
+.field.locked::after {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,0.04) 4px,rgba(0,0,0,0.04) 5px);
+}
+.field-lock-icon {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  font-size:12px; color:var(--muted); pointer-events:none; z-index:1;
+}
+
+.flabel {
+  font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--muted);
+  display:flex; align-items:center; gap:4px;
+}
+.flabel .req { color:var(--gold); }
+.flabel .tier-tag {
+  font-size:8px; letter-spacing:2px; background:rgba(201,168,76,0.1);
+  color:var(--gold); padding:1px 6px; border:1px solid rgba(201,168,76,0.2);
+}
+
+.field input, .field select, .field textarea {
+  background:transparent; border:none; outline:none;
+  color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; width:100%;
+}
+.field select option { background:var(--dark); }
+.field textarea { resize:vertical; min-height:88px; line-height:1.65; }
+.field input::placeholder, .field textarea::placeholder { color:rgba(122,106,86,0.5); }
+.field-hint { font-size:9px; color:var(--muted); letter-spacing:0.5px; }
+.field-err-msg { font-size:9px; color:#c07070; letter-spacing:0.5px; display:none; }
+.field.err .field-err-msg { display:block; }
+
+/* Checkboxes */
+.cg { display:flex; flex-wrap:wrap; gap:8px 12px; padding:6px 0; }
+.ci { display:flex; align-items:center; gap:7px; cursor:pointer; }
+.ci input { display:none; }
+.ci-box {
+  width:14px; height:14px; border:1px solid var(--border2);
+  background:transparent; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center; transition:all 0.15s;
+}
+.ci input:checked ~ .ci-box { background:var(--gold); border-color:var(--gold); }
+.ci input:checked ~ .ci-box::after { content:'✓'; font-size:9px; color:var(--dark); font-weight:700; }
+.ci-lbl { font-size:11px; color:var(--sand); }
+
+/* Upload zones */
+.uzone {
+  border:1px dashed rgba(185,152,112,0.2); padding:28px 20px; text-align:center;
+  cursor:pointer; transition:border-color 0.2s; background:rgba(0,0,0,0.12);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.uzone:hover { border-color:var(--gold); }
+.uzone-icon { font-size:22px; color:var(--muted); }
+.uzone-text { font-size:12px; color:var(--muted); }
+.uzone-text span { color:var(--sand); }
+.uzone-limit { font-size:9px; color:var(--muted); letter-spacing:1px; }
+
+/* Tier upgrade notice */
+.tier-notice {
+  background:rgba(201,168,76,0.04); border-left:2px solid var(--gold);
+  padding:12px 16px; margin-bottom:2px;
+  font-size:11px; color:var(--sand); line-height:1.7;
+  display:flex; align-items:flex-start; gap:10px;
+}
+.tier-notice::before { content:'↑'; color:var(--gold); font-size:13px; flex-shrink:0; }
+.tier-notice a { color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(201,168,76,0.3); }
+
+/* ════════════════════════
+   STEP 4 — REVIEW
+════════════════════════ */
+.review-plan {
+  background:var(--mid); border:1px solid var(--border2);
+  padding:28px; margin-bottom:2px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.rp-left {}
+.rp-tag { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.rp-name { font-family:'Cormorant Garamond',serif; font-size:36px; color:var(--gold); line-height:1; }
+.rp-actors { font-size:11px; color:var(--muted); margin-top:6px; }
+.rp-right { text-align:right; }
+.rp-price { font-family:'Cormorant Garamond',serif; font-size:44px; color:var(--cream); line-height:1; }
+.rp-price sup { font-size:20px; }
+.rp-period { font-size:10px; color:var(--muted); margin-top:4px; letter-spacing:1px; }
+
+.review-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-bottom:24px; }
+.rv-block { background:var(--mid); padding:24px 22px; }
+.rv-title { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+.rv-row { display:flex; justify-content:space-between; gap:12px; padding:7px 0; font-size:12px; border-bottom:1px solid rgba(185,152,112,0.04); }
+.rv-row:last-child { border:none; }
+.rv-k { color:var(--muted); flex-shrink:0; }
+.rv-v { color:var(--cream); text-align:right; max-width:220px; word-break:break-all; }
+
+/* Terms */
+.terms-label {
+  display:flex; align-items:flex-start; gap:14px; cursor:pointer;
+  padding:20px; background:var(--mid); border:1px solid var(--border);
+  font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:2px;
+}
+.terms-label input { width:16px; height:16px; flex-shrink:0; margin-top:2px; accent-color:var(--gold); cursor:pointer; }
+.terms-label a { color:var(--gold); text-decoration:none; }
+
+.btn-submit {
+  width:100%; padding:18px; background:var(--gold); border:none;
+  color:var(--dark); font-family:'DM Sans',sans-serif; font-size:11px;
+  letter-spacing:4px; text-transform:uppercase; font-weight:500;
+  cursor:pointer; transition:opacity 0.2s, transform 0.2s;
+}
+.btn-submit:hover { opacity:0.87; transform:translateY(-1px); }
+.btn-submit:active { transform:translateY(0); }
+
+/* ════════════════════════
+   STEP 5 — SUCCESS
+════════════════════════ */
+.success-screen { padding:60px 0; text-align:center; }
+.success-ring {
+  width:88px; height:88px; border-radius:50%;
+  border:1px solid rgba(74,122,90,0.4); background:rgba(74,122,90,0.06);
+  display:flex; align-items:center; justify-content:center;
+  font-size:34px; margin:0 auto 36px;
+  animation: ringPop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes ringPop { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
+.success-title { font-family:'Cormorant Garamond',serif; font-size:clamp(36px,4vw,56px); color:var(--white); margin-bottom:12px; }
+.success-title em { color:var(--gold); }
+.success-text { font-size:14px; color:var(--muted); max-width:460px; margin:0 auto 44px; line-height:1.85; }
+.success-text strong { color:var(--sand); }
+.success-links { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.sl { padding:12px 28px; font-size:10px; letter-spacing:3px; text-transform:uppercase; text-decoration:none; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+.sl.gold { background:var(--gold); color:var(--dark); }
+.sl.out  { border:1px solid var(--border2); color:var(--sand); }
+.sl:hover { opacity:0.8; }
+
+/* ── NAVIGATION BUTTONS ── */
+.btn-row {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:52px; padding-top:28px; border-top:1px solid var(--border);
+}
+.btn-back {
+  background:transparent; border:1px solid var(--border); color:var(--muted);
+  font-family:'DM Sans',sans-serif; font-size:10px; letter-spacing:3px;
+  text-transform:uppercase; padding:13px 24px; cursor:pointer; transition:all 0.2s;
+}
+.btn-back:hover { border-color:var(--sand); color:var(--cream); }
+.btn-next {
+  background:var(--gold); border:none; color:var(--dark);
+  font-family:'DM Sans',sans-serif; font-size:10px; letter-spacing:3px;
+  text-transform:uppercase; padding:13px 32px; cursor:pointer;
+  transition:opacity 0.2s, transform 0.2s; font-weight:500;
+}
+.btn-next:hover:not(:disabled) { opacity:0.87; transform:translateY(-1px); }
+.btn-next:disabled { opacity:0.3; cursor:not-allowed; }
+.btn-row-info { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <span>World Stone<span class="logo-hub"> Hub</span></span>
+    <span class="logo-sub">Portal Internacional</span>
+  </a>
+  <a href="index.html" class="nav-back">Volver al portal</a>
+</nav>
+
+<!-- SHELL: sidebar + main -->
+<div class="shell">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-stone-bg"></div>
+    <div class="sidebar-eyebrow">Alta profesional</div>
+    <div class="sidebar-title">Hazte<br><em>visible</em></div>
+    <div class="sidebar-sub">Crea tu perfil en el directorio de referencia del sector de la piedra natural.</div>
+
+    <div class="step-list">
+      <div class="step-row active" id="si1">
+        <div class="step-dot"><span class="step-num">1</span></div>
+        <div class="step-info">
+          <div class="step-name">Elige tu plan</div>
+          <div class="step-desc">Directorio gratuito o suscripción de pago</div>
+        </div>
+      </div>
+      <div class="step-row" id="si2">
+        <div class="step-dot"><span class="step-num">2</span></div>
+        <div class="step-info">
+          <div class="step-name">Tipo de empresa</div>
+          <div class="step-desc">Cantera, distribuidor, arquitecto…</div>
+        </div>
+      </div>
+      <div class="step-row" id="si3">
+        <div class="step-dot"><span class="step-num">3</span></div>
+        <div class="step-info">
+          <div class="step-name">Tus datos</div>
+          <div class="step-desc">Empresa, contacto y especialización</div>
+        </div>
+      </div>
+      <div class="step-row" id="si4">
+        <div class="step-dot"><span class="step-num">4</span></div>
+        <div class="step-info">
+          <div class="step-name">Confirmar</div>
+          <div class="step-desc">Revisa y envía tu solicitud</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan badge (visible after step 1) -->
+    <div class="sidebar-plan-badge" id="planBadge">
+      <div class="spb-label">Plan seleccionado</div>
+      <div class="spb-name" id="spbName">—</div>
+      <div class="spb-price" id="spbPrice">—</div>
+      <div class="spb-actors" id="spbActors" style="display:none"></div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- ══════════════════════════
+         S1 · ELEGIR PLAN
+    ══════════════════════════ -->
+    <div class="screen active" id="s1">
+      <div class="screen-eyebrow">Paso 1 de 4</div>
+      <h1 class="screen-title">Elige tu<br><em>plan de visibilidad</em></h1>
+      <p class="screen-desc">Desde una ficha básica gratuita hasta presencia editorial completa. Puedes cambiar o cancelar en cualquier momento.</p>
+
+      <div class="plans-grid">
+
+        <!-- FREE -->
+        <div class="plan-card" data-plan="free" data-price="0" onclick="selectPlan(this)">
+          <div class="plan-check">✓</div>
+          <div class="plan-tag t-free">Gratuito</div>
+          <div class="plan-name">Directorio</div>
+          <div class="plan-price-line"><div class="plan-price">0<sup>€</sup></div></div>
+          <div class="plan-billing">Sin tarjeta · Sin compromiso</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-feats">
+            <li><span class="fi">›</span>Ficha en el directorio</li>
+            <li><span class="fi">›</span>Nombre, tipo y país</li>
+            <li><span class="fi">›</span>Contacto solo interno</li>
+            <li><span class="fi">›</span>Revisión editorial previa</li>
+            <li class="off"><span class="fi">·</span>No aparece en búsquedas</li>
+            <li class="off"><span class="fi">·</span>Sin fotos ni catálogo</li>
+            <li class="off"><span class="fi">·</span>Sin estadísticas</li>
+          </ul>
+        </div>
+
+        <!-- PRESENCIA -->
+        <div class="plan-card" data-plan="presencia" data-price="49" onclick="selectPlan(this)">
+          <div class="plan-check">✓</div>
+          <div class="plan-tag t-base">Entrada</div>
+          <div class="plan-name">Presencia</div>
+          <div class="plan-price-line"><div class="plan-price"><sup>€</sup>49</div><span class="plan-pm">/mes</span></div>
+          <div class="plan-billing">€588/año · facturación anual</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-feats">
+            <li><span class="fi">›</span>Ficha verificada y publicada</li>
+            <li><span class="fi">›</span>Aparece en búsquedas</li>
+            <li><span class="fi">›</span>Hasta 10 fotos de catálogo</li>
+            <li><span class="fi">›</span>Datos de contacto visibles</li>
+            <li><span class="fi">›</span>Estadísticas básicas</li>
+            <li><span class="fi">›</span>Badge verificado</li>
+            <li class="off"><span class="fi">·</span>Sin galería de proyectos</li>
+          </ul>
+        </div>
+
+        <!-- PROFESIONAL -->
+        <div class="plan-card" data-plan="profesional" data-price="129" onclick="selectPlan(this)">
+          <div class="plan-popular">Más popular</div>
+          <div class="plan-check">✓</div>
+          <div class="plan-tag t-pro" style="margin-top:18px">Recomendado</div>
+          <div class="plan-name">Profesional</div>
+          <div class="plan-price-line"><div class="plan-price"><sup>€</sup>129</div><span class="plan-pm">/mes</span></div>
+          <div class="plan-billing">€1.548/año · facturación anual</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-feats">
+            <li><span class="fi">›</span>Ficha premium destacada</li>
+            <li><span class="fi">›</span>Posicionamiento prioritario</li>
+            <li><span class="fi">›</span>Catálogo ilimitado</li>
+            <li><span class="fi">›</span>Galería de proyectos</li>
+            <li><span class="fi">›</span>Solicitudes de muestras</li>
+            <li><span class="fi">›</span>Estadísticas + leads</li>
+            <li><span class="fi">›</span>Badge de confianza</li>
+          </ul>
+        </div>
+
+        <!-- ELITE -->
+        <div class="plan-card" data-plan="elite" data-price="299" onclick="selectPlan(this)">
+          <div class="plan-check">✓</div>
+          <div class="plan-tag t-elite">Premium</div>
+          <div class="plan-name">Élite</div>
+          <div class="plan-price-line"><div class="plan-price"><sup>€</sup>299</div><span class="plan-pm">/mes</span></div>
+          <div class="plan-billing">€3.588/año · facturación anual</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-feats">
+            <li><span class="fi">›</span>Todo lo de Profesional</li>
+            <li><span class="fi">›</span>Destacado en homepage</li>
+            <li><span class="fi">›</span>Artículos editoriales</li>
+            <li><span class="fi">›</span>Integración API/feed</li>
+            <li><span class="fi">›</span>Múltiples usuarios</li>
+            <li><span class="fi">›</span>Gestor dedicado</li>
+            <li><span class="fi">›</span>Informes de mercado</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Comparison -->
+      <div class="compare-wrap">
+        <div class="compare-hd">Comparativa de planes</div>
+        <div class="compare-row hd"><span></span><span style="text-align:center">Directorio</span><span style="text-align:center">Presencia</span><span style="text-align:center">Profesional</span><span style="text-align:center">Élite</span></div>
+        <div class="compare-row"><span class="cf">Ficha publicada</span><span class="cv y">✓</span><span class="cv y">✓</span><span class="cv y">✓</span><span class="cv y">✓</span></div>
+        <div class="compare-row"><span class="cf">Visible en búsquedas</span><span class="cv n">—</span><span class="cv y">✓</span><span class="cv y">✓</span><span class="cv y">✓</span></div>
+        <div class="compare-row"><span class="cf">Fotos de catálogo</span><span class="cv n">—</span><span class="cv">Hasta 10</span><span class="cv g">Ilimitado</span><span class="cv g">Ilimitado</span></div>
+        <div class="compare-row"><span class="cf">Galería proyectos</span><span class="cv n">—</span><span class="cv n">—</span><span class="cv y">✓</span><span class="cv y">✓</span></div>
+        <div class="compare-row"><span class="cf">Formulario muestras</span><span class="cv n">—</span><span class="cv n">—</span><span class="cv y">✓</span><span class="cv y">✓</span></div>
+        <div class="compare-row"><span class="cf">Estadísticas &amp; leads</span><span class="cv n">—</span><span class="cv">Básicas</span><span class="cv">Avanzadas</span><span class="cv g">Completas</span></div>
+        <div class="compare-row"><span class="cf">Homepage destacado</span><span class="cv n">—</span><span class="cv n">—</span><span class="cv n">—</span><span class="cv g">✓</span></div>
+        <div class="compare-row"><span class="cf">Gestor de cuenta</span><span class="cv n">—</span><span class="cv n">—</span><span class="cv n">—</span><span class="cv g">Dedicado</span></div>
+      </div>
+
+      <div class="btn-row">
+        <span></span>
+        <button class="btn-next" id="btn1" disabled onclick="goTo(2)">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════
+         S2 · TIPO DE ACTOR
+    ══════════════════════════ -->
+    <div class="screen" id="s2">
+      <div class="screen-eyebrow">Paso 2 de 4</div>
+      <h1 class="screen-title">¿Qué papel juegas<br><em>en el sector?</em></h1>
+      <p class="screen-desc">Tu ficha se adaptará automáticamente a los campos de cada rol. Puedes seleccionar varios si tu empresa cubre más de uno.</p>
+      <p class="multi-note">Selección <span>múltiple permitida</span> — ej. cantera + transformador</p>
+
+      <div class="actors-grid">
+        <div class="actor-card" data-actor="cantera" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">⛏</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Cantera</div>
+          <div class="ac-desc">Extracción de piedra natural en origen. Bloques, losas y áridos directamente desde la roca madre.</div>
+        </div>
+        <div class="actor-card" data-actor="transformador" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🏭</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Transformador</div>
+          <div class="ac-desc">Corte, acabado y elaboración. Serrerías, talleres y fábricas que convierten el bloque en producto.</div>
+        </div>
+        <div class="actor-card" data-actor="distribuidor" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🚛</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Distribuidor</div>
+          <div class="ac-desc">Venta y distribución de piedra natural y artificial a profesionales, constructores e instaladores.</div>
+        </div>
+        <div class="actor-card" data-actor="exportador" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🌍</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Exportador / Importador</div>
+          <div class="ac-desc">Comercio internacional. Agentes, traders y empresas con actividad de exportación o importación.</div>
+        </div>
+        <div class="actor-card" data-actor="instalador" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🪨</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Instalador</div>
+          <div class="ac-desc">Empresas especializadas en colocación y montaje de piedra natural en obras y proyectos.</div>
+        </div>
+        <div class="actor-card" data-actor="arquitecto" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">📐</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Arquitecto / Diseñador</div>
+          <div class="ac-desc">Estudios que especifican y prescriben piedra natural en proyectos de arquitectura e interiorismo.</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(1)">← Volver</button>
+        <div style="display:flex;align-items:center;gap:20px">
+          <span class="actor-counter" id="actorCount">0 seleccionados</span>
+          <button class="btn-next" id="btn2" disabled onclick="goTo(3)">Continuar →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════
+         S3 · FORMULARIO
+    ══════════════════════════ -->
+    <div class="screen" id="s3">
+      <div class="screen-eyebrow">Paso 3 de 4</div>
+      <h1 class="screen-title">Completa<br><em>tu perfil</em></h1>
+      <p class="screen-desc">Los campos con <span style="color:var(--gold)">*</span> son obligatorios. El resto enriquece tu visibilidad en el directorio.</p>
+
+      <div class="fsections">
+
+        <!-- EMPRESA -->
+        <div class="fsec">
+          <div class="fsec-hd">Empresa</div>
+          <div class="fgrid">
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Razón social</div>
+              <input type="text" id="f_nombre" placeholder="Mármoles García S.L."/>
+              <div class="field-err-msg">Campo obligatorio</div>
+            </div>
+            <div class="field">
+              <div class="flabel">Nombre comercial / Marca</div>
+              <input type="text" id="f_marca" placeholder="García Stone"/>
+            </div>
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> País</div>
+              <select id="f_pais">
+                <option value="">Seleccionar...</option>
+                <option>España</option><option>Italia</option><option>Portugal</option>
+                <option>Francia</option><option>Alemania</option><option>Brasil</option>
+                <option>India</option><option>China</option><option>Turquía</option>
+                <option>México</option><option>EEUU</option><option>Marruecos</option>
+                <option>Grecia</option><option>Noruega</option><option>Argentina</option>
+                <option>Sudáfrica</option><option>Australia</option><option>Otro</option>
+              </select>
+              <div class="field-err-msg">Campo obligatorio</div>
+            </div>
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Ciudad / Región</div>
+              <input type="text" id="f_ciudad" placeholder="Novelda, Alicante"/>
+              <div class="field-err-msg">Campo obligatorio</div>
+            </div>
+            <div class="field">
+              <div class="flabel">Año de fundación</div>
+              <input type="number" id="f_fundacion" placeholder="1985" min="1800" max="2025"/>
+            </div>
+            <div class="field">
+              <div class="flabel">Plantilla</div>
+              <select id="f_empleados">
+                <option value="">Seleccionar...</option>
+                <option>1–5 personas</option><option>6–20 personas</option>
+                <option>21–50 personas</option><option>51–200 personas</option>
+                <option>201–500 personas</option><option>+500 personas</option>
+              </select>
+            </div>
+          </div>
+          <div class="fgrid g1" style="margin-top:2px">
+            <div class="field">
+              <div class="flabel">Descripción de la empresa</div>
+              <textarea id="f_desc" placeholder="Describe tu empresa: especialización, mercados, propuesta de valor…"></textarea>
+              <div class="field-hint">Máx. 500 caracteres · aparecerá en tu ficha pública</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTACTO -->
+        <div class="fsec">
+          <div class="fsec-hd">Contacto</div>
+          <div class="fgrid">
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Email empresa</div>
+              <input type="email" id="f_email" placeholder="info@empresa.com"/>
+              <div class="field-err-msg">Email no válido</div>
+            </div>
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Teléfono</div>
+              <input type="tel" id="f_tel" placeholder="+34 966 000 000"/>
+              <div class="field-err-msg">Campo obligatorio</div>
+            </div>
+            <div class="field">
+              <div class="flabel">Sitio web</div>
+              <input type="url" id="f_web" placeholder="https://www.empresa.com"/>
+            </div>
+            <div class="field">
+              <div class="flabel">LinkedIn</div>
+              <input type="url" id="f_linkedin" placeholder="linkedin.com/company/..."/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESPECIALIZACIÓN -->
+        <div class="fsec">
+          <div class="fsec-hd">Especialización</div>
+          <div class="fgrid">
+            <div class="field">
+              <div class="flabel">Tipos de piedra</div>
+              <div class="cg">
+                <label class="ci"><input type="checkbox" value="marmol"/><span class="ci-box"></span><span class="ci-lbl">Mármol</span></label>
+                <label class="ci"><input type="checkbox" value="granito"/><span class="ci-box"></span><span class="ci-lbl">Granito</span></label>
+                <label class="ci"><input type="checkbox" value="cuarcita"/><span class="ci-box"></span><span class="ci-lbl">Cuarcita</span></label>
+                <label class="ci"><input type="checkbox" value="travertino"/><span class="ci-box"></span><span class="ci-lbl">Travertino</span></label>
+                <label class="ci"><input type="checkbox" value="caliza"/><span class="ci-box"></span><span class="ci-lbl">Caliza</span></label>
+                <label class="ci"><input type="checkbox" value="pizarra"/><span class="ci-box"></span><span class="ci-lbl">Pizarra</span></label>
+                <label class="ci"><input type="checkbox" value="onix"/><span class="ci-box"></span><span class="ci-lbl">Ónix</span></label>
+                <label class="ci"><input type="checkbox" value="cuarzo"/><span class="ci-box"></span><span class="ci-lbl">Cuarzo eng.</span></label>
+                <label class="ci"><input type="checkbox" value="sinterizada"/><span class="ci-box"></span><span class="ci-lbl">Sinterizada</span></label>
+                <label class="ci"><input type="checkbox" value="otro"/><span class="ci-box"></span><span class="ci-lbl">Otros</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <div class="flabel">Usos principales</div>
+              <div class="cg">
+                <label class="ci"><input type="checkbox" value="suelo_int"/><span class="ci-box"></span><span class="ci-lbl">Suelo interior</span></label>
+                <label class="ci"><input type="checkbox" value="suelo_ext"/><span class="ci-box"></span><span class="ci-lbl">Suelo exterior</span></label>
+                <label class="ci"><input type="checkbox" value="encimera"/><span class="ci-box"></span><span class="ci-lbl">Encimeras</span></label>
+                <label class="ci"><input type="checkbox" value="fachada"/><span class="ci-box"></span><span class="ci-lbl">Fachada</span></label>
+                <label class="ci"><input type="checkbox" value="bano"/><span class="ci-box"></span><span class="ci-lbl">Baño</span></label>
+                <label class="ci"><input type="checkbox" value="escalera"/><span class="ci-box"></span><span class="ci-lbl">Escaleras</span></label>
+                <label class="ci"><input type="checkbox" value="fune"/><span class="ci-box"></span><span class="ci-lbl">Funerario</span></label>
+                <label class="ci"><input type="checkbox" value="obra_pub"/><span class="ci-box"></span><span class="ci-lbl">Obra pública</span></label>
+              </div>
+            </div>
+          </div>
+          <div class="fgrid g3" style="margin-top:2px">
+            <div class="field">
+              <div class="flabel">Mercados / exportación</div>
+              <input type="text" id="f_mercados" placeholder="Francia, Alemania, EEUU…"/>
+              <div class="field-hint">Países separados por comas</div>
+            </div>
+            <div class="field">
+              <div class="flabel">Producción anual</div>
+              <input type="text" id="f_produccion" placeholder="50.000 m²/año"/>
+            </div>
+            <div class="field">
+              <div class="flabel">Certificaciones</div>
+              <input type="text" id="f_certs" placeholder="CE, ISO 9001, PEFC…"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- CANTERA (condicional) -->
+        <div class="fsec" id="sec_cantera" style="display:none">
+          <div class="fsec-hd">Datos de la cantera</div>
+          <div class="fgrid">
+            <div class="field">
+              <div class="flabel">Nombre de la cantera</div>
+              <input type="text" id="f_cant_nombre" placeholder="Cantera Sierra Elvira"/>
+            </div>
+            <div class="field">
+              <div class="flabel">Localización</div>
+              <input type="text" id="f_cant_loc" placeholder="Atarfe, Granada, España"/>
+            </div>
+            <div class="field">
+              <div class="flabel">Material principal</div>
+              <input type="text" id="f_cant_mat" placeholder="Mármol Blanco Granada"/>
+            </div>
+            <div class="field">
+              <div class="flabel">Estado operativo</div>
+              <select id="f_cant_estado">
+                <option value="">Seleccionar...</option>
+                <option>Activa</option><option>Activa estacional</option>
+                <option>En proyecto</option><option>Histórica / Musealizada</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="flabel">Coordenadas GPS (lat)</div>
+              <input type="text" id="f_cant_lat" placeholder="37.1234"/>
+            </div>
+            <div class="field">
+              <div class="flabel">Coordenadas GPS (lng)</div>
+              <input type="text" id="f_cant_lng" placeholder="-3.5678"/>
+              <div class="field-hint">Para aparecer en el mapa interactivo</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMÁGENES (tier-gated) -->
+        <div class="fsec" id="sec_imagenes">
+          <div class="fsec-hd">Imágenes y catálogo</div>
+          <div id="img_notice_free" style="display:none">
+            <div class="tier-notice">Plan Directorio: las imágenes no se publican. <a href="#" onclick="goTo(1);return false">Cambia tu plan</a> a Presencia o superior para añadir fotos a tu ficha.</div>
+          </div>
+          <div id="img_fields">
+            <div class="uzone" style="margin-bottom:2px" id="uz_logo">
+              <div class="uzone-icon">◈</div>
+              <div class="uzone-text">Arrastra tu <span>logotipo</span> o haz clic</div>
+              <div class="uzone-limit">PNG · SVG · JPG · Máx. 2 MB</div>
+            </div>
+            <div class="fgrid" style="margin-top:2px">
+              <div class="uzone" id="uz_catalog">
+                <div class="uzone-icon">⬡</div>
+                <div class="uzone-text"><span>Catálogo de productos</span></div>
+                <div class="uzone-limit" id="uz_cat_limit">Hasta 10 imágenes · JPG / PNG · 5 MB c/u</div>
+              </div>
+              <div class="uzone" id="uz_projects">
+                <div class="uzone-icon">◫</div>
+                <div class="uzone-text" id="uz_proj_text"><span>Galería de proyectos</span></div>
+                <div class="uzone-limit" id="uz_proj_limit">Plan Profesional o superior</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESPONSABLE -->
+        <div class="fsec">
+          <div class="fsec-hd">Responsable de la cuenta</div>
+          <div class="fgrid g3">
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Nombre y apellidos</div>
+              <input type="text" id="f_resp_nombre" placeholder="María García"/>
+              <div class="field-err-msg">Campo obligatorio</div>
+            </div>
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Cargo</div>
+              <input type="text" id="f_resp_cargo" placeholder="Directora Comercial"/>
+              <div class="field-err-msg">Campo obligatorio</div>
+            </div>
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Email directo</div>
+              <input type="email" id="f_resp_email" placeholder="m.garcia@empresa.com"/>
+              <div class="field-err-msg">Email no válido</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUENTA -->
+        <div class="fsec">
+          <div class="fsec-hd">Acceso a tu panel</div>
+          <div class="fgrid g3">
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Email de acceso</div>
+              <input type="email" id="f_login" placeholder="tu@email.com"/>
+              <div class="field-err-msg">Email no válido</div>
+            </div>
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Contraseña</div>
+              <input type="password" id="f_pass1" placeholder="Mín. 8 caracteres"/>
+              <div class="field-err-msg">Mínimo 8 caracteres</div>
+            </div>
+            <div class="field">
+              <div class="flabel"><span class="req">*</span> Repetir contraseña</div>
+              <input type="password" id="f_pass2" placeholder="Repetir contraseña"/>
+              <div class="field-err-msg">Las contraseñas no coinciden</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /fsections -->
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(2)">← Volver</button>
+        <button class="btn-next" onclick="validateS3()">Revisar solicitud →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════
+         S4 · CONFIRMAR
+    ══════════════════════════ -->
+    <div class="screen" id="s4">
+      <div class="screen-eyebrow">Paso 4 de 4</div>
+      <h1 class="screen-title">Revisa y<br><em>confirma</em></h1>
+      <p class="screen-desc">Comprueba que todo está correcto. Podrás modificar tu ficha en cualquier momento desde tu panel.</p>
+
+      <div class="review-plan">
+        <div class="rp-left">
+          <div class="rp-tag">Plan seleccionado</div>
+          <div class="rp-name" id="rv_plan">—</div>
+          <div class="rp-actors" id="rv_actors">—</div>
+        </div>
+        <div class="rp-right">
+          <div class="rp-price" id="rv_price">—</div>
+          <div class="rp-period" id="rv_period">—</div>
+        </div>
+      </div>
+
+      <div class="review-grid">
+        <div class="rv-block">
+          <div class="rv-title">Empresa</div>
+          <div class="rv-row"><span class="rv-k">Razón social</span><span class="rv-v" id="rv_nombre">—</span></div>
+          <div class="rv-row"><span class="rv-k">País</span><span class="rv-v" id="rv_pais">—</span></div>
+          <div class="rv-row"><span class="rv-k">Ciudad</span><span class="rv-v" id="rv_ciudad">—</span></div>
+          <div class="rv-row"><span class="rv-k">Fundación</span><span class="rv-v" id="rv_fundacion">—</span></div>
+          <div class="rv-row"><span class="rv-k">Plantilla</span><span class="rv-v" id="rv_empleados">—</span></div>
+        </div>
+        <div class="rv-block">
+          <div class="rv-title">Contacto y acceso</div>
+          <div class="rv-row"><span class="rv-k">Email empresa</span><span class="rv-v" id="rv_email">—</span></div>
+          <div class="rv-row"><span class="rv-k">Teléfono</span><span class="rv-v" id="rv_tel">—</span></div>
+          <div class="rv-row"><span class="rv-k">Responsable</span><span class="rv-v" id="rv_resp">—</span></div>
+          <div class="rv-row"><span class="rv-k">Cargo</span><span class="rv-v" id="rv_cargo">—</span></div>
+          <div class="rv-row"><span class="rv-k">Email de acceso</span><span class="rv-v" id="rv_login">—</span></div>
+        </div>
+      </div>
+
+      <label class="terms-label">
+        <input type="checkbox" id="chk_terms"/>
+        <span>He leído y acepto los <a href="#">Términos de Uso</a> y la <a href="#">Política de Privacidad</a> de World Stone Hub. Entiendo que mi alta está sujeta a revisión editorial antes de ser publicada en el directorio.</span>
+      </label>
+
+      <button class="btn-submit" onclick="submitForm()">Enviar solicitud de alta →</button>
+
+      <div class="btn-row" style="border:none;padding-top:16px;margin-top:4px;">
+        <button class="btn-back" onclick="goTo(3)">← Modificar datos</button>
+        <span class="btn-row-info">Revisión en 24–48h</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════
+         S5 · ÉXITO
+    ══════════════════════════ -->
+    <div class="screen" id="s5">
+      <div class="success-screen">
+        <div class="success-ring">✓</div>
+        <h1 class="success-title">Solicitud<br><em>enviada</em></h1>
+        <p class="success-text">Hemos recibido tu alta en World Stone Hub. Nuestro equipo la revisará en <strong>24–48 horas</strong> y recibirás un email de confirmación con acceso a tu panel.</p>
+        <div class="success-links">
+          <a href="index.html" class="sl gold">Volver al inicio</a>
+          <a href="lapidis-materiales.html" class="sl out">Explorar materiales</a>
+          <a href="lapidis-canteras.html" class="sl out">Ver canteras</a>
+          <a href="lapidis-proveedores.html" class="sl out">Ver proveedores</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /shell -->
+
+<script>
+// ═══════════════════════════════════════════
+// WORLD STONE HUB — REGISTRO
+// ═══════════════════════════════════════════
+var ST = { plan:null, price:0, actors:[], step:1 };
+
+var PLAN_NAMES   = { free:'Directorio', presencia:'Presencia', profesional:'Profesional', elite:'Élite' };
+var PLAN_PERIODS = { free:'Sin coste', presencia:'€49/mes · anual', profesional:'€129/mes · anual', elite:'€299/mes · anual' };
+var ACTOR_NAMES  = { cantera:'Cantera', transformador:'Transformador', distribuidor:'Distribuidor', exportador:'Exportador/Importador', instalador:'Instalador', arquitecto:'Arquitecto/Diseñador' };
+
+// ── 1. Select plan ──
+function selectPlan(card) {
+  document.querySelectorAll('.plan-card').forEach(function(c){ c.classList.remove('selected'); });
+  card.classList.add('selected');
+  ST.plan  = card.dataset.plan;
+  ST.price = parseInt(card.dataset.price);
+  document.getElementById('btn1').disabled = false;
+  updateSidebarBadge();
+  updateTierUI();
+}
+
+// ── 2. Toggle actor ──
+function toggleActor(card) {
+  card.classList.toggle('selected');
+  var a = card.dataset.actor;
+  var i = ST.actors.indexOf(a);
+  if (i >= 0) ST.actors.splice(i, 1); else ST.actors.push(a);
+  var n = ST.actors.length;
+  document.getElementById('actorCount').textContent = n + ' seleccionado' + (n !== 1 ? 's':'');
+  document.getElementById('btn2').disabled = n === 0;
+  updateSidebarBadge();
+  // Show cantera fields
+  document.getElementById('sec_cantera').style.display = ST.actors.includes('cantera') ? 'block' : 'none';
+}
+
+// ── Sidebar badge ──
+function updateSidebarBadge() {
+  var b = document.getElementById('planBadge');
+  if (!ST.plan) { b.classList.remove('show'); return; }
+  b.classList.add('show');
+  document.getElementById('spbName').textContent  = PLAN_NAMES[ST.plan] || '—';
+  document.getElementById('spbPrice').textContent = PLAN_PERIODS[ST.plan] || '—';
+  var actEl = document.getElementById('spbActors');
+  if (ST.actors.length > 0) {
+    actEl.style.display = 'block';
+    actEl.textContent = ST.actors.map(function(a){ return ACTOR_NAMES[a]||a; }).join(' · ');
+  } else { actEl.style.display = 'none'; }
+}
+
+// ── Tier-based UI ──
+function updateTierUI() {
+  var p = ST.plan;
+  var isFree = p === 'free';
+  var isPro  = p === 'profesional' || p === 'elite';
+
+  // Free plan notice
+  var fn = document.getElementById('img_notice_free');
+  var ff = document.getElementById('img_fields');
+  if (fn) fn.style.display = isFree ? 'block' : 'none';
+  if (ff) { ff.style.opacity = isFree ? '0.28' : '1'; ff.style.pointerEvents = isFree ? 'none' : 'auto'; }
+
+  // Projects gallery lock
+  var uzp = document.getElementById('uz_projects');
+  var uzpt = document.getElementById('uz_proj_text');
+  var uzpl = document.getElementById('uz_proj_limit');
+  if (uzp) {
+    if (!isPro) {
+      uzp.style.opacity = '0.4'; uzp.style.pointerEvents = 'none';
+      if (uzpt) uzpt.innerHTML = '<span style="color:var(--muted)">Galería de proyectos</span>';
+      if (uzpl) uzpl.textContent = 'Disponible en plan Profesional o superior';
+    } else {
+      uzp.style.opacity = '1'; uzp.style.pointerEvents = 'auto';
+      if (uzpt) uzpt.innerHTML = '<span>Galería de proyectos</span>';
+      if (uzpl) uzpl.textContent = 'Ilimitado · JPG / PNG · 5 MB c/u';
+    }
+  }
+
+  // Catalog limit
+  var uc = document.getElementById('uz_cat_limit');
+  if (uc) uc.textContent = isPro ? 'Ilimitado · JPG / PNG · 5 MB c/u' : 'Hasta 10 imágenes · JPG / PNG · 5 MB c/u';
+}
+
+// ── Navigate ──
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('s' + n).classList.add('active');
+  ST.step = n;
+  updateSteps(n);
+  window.scrollTo({ top:0, behavior:'smooth' });
+  if (n === 4) fillReview();
+}
+
+function updateSteps(cur) {
+  for (var i = 1; i <= 4; i++) {
+    var r = document.getElementById('si' + i);
+    if (!r) continue;
+    r.classList.remove('active','done');
+    if (i < cur)      r.classList.add('done');
+    else if (i === cur) r.classList.add('active');
+  }
+}
+
+// ── Validate step 3 ──
+function validateS3() {
+  var checks = [
+    { id:'f_nombre', fn:function(v){ return v.trim().length > 0; } },
+    { id:'f_pais',   fn:function(v){ return v.trim().length > 0; } },
+    { id:'f_ciudad', fn:function(v){ return v.trim().length > 0; } },
+    { id:'f_email',  fn:function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); } },
+    { id:'f_tel',    fn:function(v){ return v.trim().length > 0; } },
+    { id:'f_resp_nombre', fn:function(v){ return v.trim().length > 0; } },
+    { id:'f_resp_cargo',  fn:function(v){ return v.trim().length > 0; } },
+    { id:'f_resp_email',  fn:function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); } },
+    { id:'f_login',  fn:function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); } },
+    { id:'f_pass1',  fn:function(v){ return v.length >= 8; } },
+    { id:'f_pass2',  fn:function(v){ return v === document.getElementById('f_pass1').value && v.length >= 8; } },
+  ];
+
+  var ok = true;
+  var firstErr = null;
+  checks.forEach(function(c) {
+    var el = document.getElementById(c.id);
+    if (!el) return;
+    var field = el.closest('.field');
+    var valid = c.fn(el.value);
+    if (!valid) {
+      ok = false; field.classList.add('err');
+      if (!firstErr) firstErr = field;
+    } else { field.classList.remove('err'); }
+  });
+
+  if (!ok && firstErr) {
+    var top = firstErr.getBoundingClientRect().top + window.scrollY - 120;
+    window.scrollTo({ top:top, behavior:'smooth' });
+    return;
+  }
+  goTo(4);
+}
+
+// ── Fill review ──
+function fillReview() {
+  function v(id) { var e=document.getElementById(id); return e ? (e.value.trim()||'—') : '—'; }
+
+  document.getElementById('rv_plan').textContent   = PLAN_NAMES[ST.plan] || '—';
+  document.getElementById('rv_actors').textContent = ST.actors.map(function(a){ return ACTOR_NAMES[a]||a; }).join(' · ') || '—';
+
+  var priceEl = document.getElementById('rv_price');
+  if (ST.price === 0) { priceEl.innerHTML = '<span style="font-size:28px;font-family:Cormorant Garamond,serif;color:var(--gold)">Gratuito</span>'; }
+  else { priceEl.innerHTML = '<sup>€</sup>' + ST.price; }
+
+  document.getElementById('rv_period').textContent  = PLAN_PERIODS[ST.plan] || '—';
+  document.getElementById('rv_nombre').textContent  = v('f_nombre');
+  document.getElementById('rv_pais').textContent    = v('f_pais');
+  document.getElementById('rv_ciudad').textContent  = v('f_ciudad');
+  document.getElementById('rv_fundacion').textContent = v('f_fundacion') !== '—' ? v('f_fundacion') : 'No indicado';
+  document.getElementById('rv_empleados').textContent = v('f_empleados') !== '—' ? v('f_empleados') : 'No indicado';
+  document.getElementById('rv_email').textContent   = v('f_email');
+  document.getElementById('rv_tel').textContent     = v('f_tel');
+  document.getElementById('rv_resp').textContent    = v('f_resp_nombre');
+  document.getElementById('rv_cargo').textContent   = v('f_resp_cargo');
+  document.getElementById('rv_login').textContent   = v('f_login');
+}
+
+// ── Submit ──
+function submitForm() {
+  if (!document.getElementById('chk_terms').checked) {
+    alert('Acepta los términos y condiciones para continuar.');
+    return;
+  }
+  goTo(5);
+}
+
+// ── Live validation ──
+document.querySelectorAll('.field input, .field select, .field textarea').forEach(function(el) {
+  el.addEventListener('input', function() {
+    var f = this.closest('.field');
+    if (f && f.classList.contains('err')) f.classList.remove('err');
+  });
+});
+
+// ── Init ──
+updateTierUI();
+</script>
+</body>
+</html>
