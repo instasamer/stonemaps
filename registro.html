@@ -233,9 +233,11 @@ nav {
    STEP 2 — ACTOR TYPE
 ════════════════════════ */
 .actors-grid {
-  display:grid; grid-template-columns:repeat(3,1fr);
+  display:grid; grid-template-columns:repeat(4,1fr);
   gap:2px; margin-bottom:12px;
 }
+@media(max-width:900px){ .actors-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:500px){ .actors-grid{ grid-template-columns:1fr; } }
 @media(max-width:720px){ .actors-grid{ grid-template-columns:repeat(2,1fr); } }
 
 .actor-card {
@@ -623,33 +625,43 @@ nav {
       <div class="actors-grid">
         <div class="actor-card" data-actor="cantera" onclick="toggleActor(this)">
           <div class="ac-top"><span class="ac-icon">⛏</span><span class="ac-check">✓</span></div>
-          <div class="ac-name">Cantera</div>
+          <div class="ac-name">Propietarios de canteras</div>
           <div class="ac-desc">Extracción de piedra natural en origen. Bloques, losas y áridos directamente desde la roca madre.</div>
-        </div>
-        <div class="actor-card" data-actor="transformador" onclick="toggleActor(this)">
-          <div class="ac-top"><span class="ac-icon">🏭</span><span class="ac-check">✓</span></div>
-          <div class="ac-name">Transformador</div>
-          <div class="ac-desc">Corte, acabado y elaboración. Serrerías, talleres y fábricas que convierten el bloque en producto.</div>
         </div>
         <div class="actor-card" data-actor="distribuidor" onclick="toggleActor(this)">
           <div class="ac-top"><span class="ac-icon">🚛</span><span class="ac-check">✓</span></div>
-          <div class="ac-name">Distribuidor</div>
+          <div class="ac-name">Distribuidores</div>
           <div class="ac-desc">Venta y distribución de piedra natural y artificial a profesionales, constructores e instaladores.</div>
         </div>
-        <div class="actor-card" data-actor="exportador" onclick="toggleActor(this)">
-          <div class="ac-top"><span class="ac-icon">🌍</span><span class="ac-check">✓</span></div>
-          <div class="ac-name">Exportador / Importador</div>
-          <div class="ac-desc">Comercio internacional. Agentes, traders y empresas con actividad de exportación o importación.</div>
-        </div>
-        <div class="actor-card" data-actor="instalador" onclick="toggleActor(this)">
-          <div class="ac-top"><span class="ac-icon">🪨</span><span class="ac-check">✓</span></div>
-          <div class="ac-name">Instalador</div>
-          <div class="ac-desc">Empresas especializadas en colocación y montaje de piedra natural en obras y proyectos.</div>
+        <div class="actor-card" data-actor="fabricante" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🏭</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Fabricantes y talleres</div>
+          <div class="ac-desc">Serrerías, talleres y fábricas que transforman el bloque en producto acabado para obra e interiorismo.</div>
         </div>
         <div class="actor-card" data-actor="arquitecto" onclick="toggleActor(this)">
           <div class="ac-top"><span class="ac-icon">📐</span><span class="ac-check">✓</span></div>
-          <div class="ac-name">Arquitecto / Diseñador</div>
-          <div class="ac-desc">Estudios que especifican y prescriben piedra natural en proyectos de arquitectura e interiorismo.</div>
+          <div class="ac-name">Estudios de arquitectura</div>
+          <div class="ac-desc">Estudios que prescriben y especifican piedra natural en proyectos residenciales, hoteleros y comerciales.</div>
+        </div>
+        <div class="actor-card" data-actor="constructora" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🏗</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Constructoras</div>
+          <div class="ac-desc">Empresas constructoras e instaladoras que trabajan con piedra natural en proyectos de cualquier escala.</div>
+        </div>
+        <div class="actor-card" data-actor="maquinaria" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">⚙️</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Maquinaria industrial</div>
+          <div class="ac-desc">Fabricantes y distribuidores de maquinaria para extracción, corte, pulido y transformación de piedra.</div>
+        </div>
+        <div class="actor-card" data-actor="laboratorio" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🔬</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Laboratorios y certificación</div>
+          <div class="ac-desc">Laboratorios de ensayo, organismos certificadores y entidades normativas del sector de la piedra.</div>
+        </div>
+        <div class="actor-card" data-actor="logistica" onclick="toggleActor(this)">
+          <div class="ac-top"><span class="ac-icon">🌐</span><span class="ac-check">✓</span></div>
+          <div class="ac-name">Logística</div>
+          <div class="ac-desc">Transportistas, operadores logísticos y agentes de aduanas especializados en piedra natural.</div>
         </div>
       </div>
 
@@ -996,7 +1008,7 @@ var ST = { plan:null, price:0, actors:[], step:1 };
 
 var PLAN_NAMES   = { free:'Directorio', presencia:'Presencia', profesional:'Profesional', elite:'Élite' };
 var PLAN_PERIODS = { free:'Sin coste', presencia:'€49/mes · anual', profesional:'€129/mes · anual', elite:'€299/mes · anual' };
-var ACTOR_NAMES  = { cantera:'Cantera', transformador:'Transformador', distribuidor:'Distribuidor', exportador:'Exportador/Importador', instalador:'Instalador', arquitecto:'Arquitecto/Diseñador' };
+var ACTOR_NAMES  = { cantera:'Propietarios de canteras', distribuidor:'Distribuidores', fabricante:'Fabricantes y talleres', arquitecto:'Estudios de arquitectura', constructora:'Constructoras', maquinaria:'Maquinaria industrial', laboratorio:'Laboratorios y certificación', logistica:'Logística' };
 
 // ── 1. Select plan ──
 function selectPlan(card) {
