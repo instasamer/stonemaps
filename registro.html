@@ -62,16 +62,17 @@ nav {
 /* ── OUTER SHELL ── */
 .shell {
   display:grid;
-  grid-template-columns:340px 1fr;
+  grid-template-columns:280px 1fr;
   min-height:100vh;
   padding-top:64px;
+  width:100%;
 }
 
 /* ── LEFT SIDEBAR ── */
 .sidebar {
   background: var(--mid);
   border-right:1px solid var(--border);
-  padding:60px 40px;
+  padding:48px 28px;
   position:sticky; top:64px; height:calc(100vh - 64px);
   display:flex; flex-direction:column;
   overflow:hidden;
@@ -139,10 +140,12 @@ nav {
 
 /* ── MAIN CONTENT ── */
 .main {
-  padding:60px 80px 100px;
-  max-width:900px;
+  padding:48px 56px 80px;
+  width:100%;
+  box-sizing:border-box;
+  min-width:0;
 }
-@media(max-width:1100px){ .main{ padding:60px 48px 100px; } }
+@media(max-width:1100px){  }
 
 /* ── SCREENS ── */
 .screen { display:none; }
@@ -156,7 +159,7 @@ nav {
 }
 
 .screen-eyebrow { font-size:9px; letter-spacing:5px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
-.screen-title { font-family:'Cormorant Garamond',serif; font-size:clamp(32px,3.5vw,50px); font-weight:300; color:var(--white); line-height:1.1; margin-bottom:10px; }
+.screen-title { font-family:'Cormorant Garamond',serif; font-size:clamp(36px,4vw,58px); font-weight:300; color:var(--white); line-height:1.1; margin-bottom:12px; }
 .screen-title em { color:var(--gold); font-style:italic; }
 .screen-desc { font-size:13px; color:var(--muted); line-height:1.8; max-width:520px; margin-bottom:52px; }
 .screen-desc a { color:var(--gold); text-decoration:none; }
@@ -168,14 +171,14 @@ nav {
   display:grid; grid-template-columns:repeat(4,1fr);
   gap:2px; margin-bottom:2px;
 }
-@media(max-width:800px){ .plans-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:800px){ .plans-grid { grid-template-columns:repeat(2,1fr); } .shell { grid-template-columns:1fr; } .sidebar { display:none; } } }
 
 .plan-card {
   background:var(--mid); border:2px solid transparent;
-  padding:28px 22px 24px; cursor:pointer;
+  padding:32px 28px 28px; cursor:pointer;
   transition:background 0.25s, border-color 0.25s, transform 0.2s;
   position:relative; display:flex; flex-direction:column; gap:0;
-  user-select:none;
+  user-select:none; min-height:280px;
 }
 .plan-card:hover { background:var(--warm); border-color:rgba(185,152,112,0.2); transform:translateY(-2px); }
 .plan-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.04); transform:translateY(-2px); }
@@ -242,8 +245,9 @@ nav {
 
 .actor-card {
   background:var(--mid); border:2px solid transparent;
-  padding:24px 20px; cursor:pointer;
+  padding:28px 24px; cursor:pointer;
   transition:all 0.22s; user-select:none; position:relative;
+  min-height:140px; display:flex; flex-direction:column;
 }
 .actor-card:hover { background:var(--warm); border-color:rgba(185,152,112,0.2); }
 .actor-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.04); }
@@ -269,22 +273,28 @@ nav {
 .fsections { display:flex; flex-direction:column; gap:40px; }
 
 .fsec {}
-.fsec-hd {
+.fsec { margin-bottom:2px; }
+  .fsec-hd {
   font-size:9px; letter-spacing:5px; text-transform:uppercase; color:var(--gold);
   padding-bottom:14px; margin-bottom:20px; border-bottom:1px solid var(--border);
   display:flex; align-items:center; gap:10px;
 }
 .fsec-hd::before { content:'◆'; font-size:7px; }
 
-.fgrid { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.fgrid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; }
+  .fgrid.g2 { grid-template-columns:1fr 1fr; }
+  .fgrid.g1 { grid-template-columns:1fr; }
+  .fgrid.g3 { grid-template-columns:1fr 1fr 1fr; }
 .fgrid.g1 { grid-template-columns:1fr; }
 .fgrid.g3 { grid-template-columns:1fr 1fr 1fr; }
-@media(max-width:700px){ .fgrid,.fgrid.g3 { grid-template-columns:1fr; } }
+@media(max-width:960px){ .fgrid { grid-template-columns:1fr 1fr; } }
+  
+  @media(max-width:620px){ .fgrid, .fgrid.g2, .fgrid.g3 { grid-template-columns:1fr; } }
 
 .field {
-  background:var(--mid); padding:14px 16px;
+  background:var(--mid); padding:18px 20px;
   border:1px solid transparent; transition:border-color 0.2s;
-  display:flex; flex-direction:column; gap:6px; position:relative;
+  display:flex; flex-direction:column; gap:7px; position:relative;
 }
 .field:focus-within { border-color:rgba(201,168,76,0.3); }
 .field.err { border-color:rgba(160,70,70,0.5); }
@@ -309,9 +319,10 @@ nav {
 }
 
 .field input, .field select, .field textarea {
-  background:transparent; border:none; outline:none;
-  color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; width:100%;
-}
+    background:transparent; border:none; outline:none;
+    color:var(--cream); font-family:'DM Sans',sans-serif; font-size:15px;
+    width:100%; padding:0; resize:vertical;
+  }
 .field select option { background:var(--dark); }
 .field textarea { resize:vertical; min-height:88px; line-height:1.65; }
 .field input::placeholder, .field textarea::placeholder { color:rgba(122,106,86,0.5); }
@@ -371,7 +382,10 @@ nav {
 .rp-price sup { font-size:20px; }
 .rp-period { font-size:10px; color:var(--muted); margin-top:4px; letter-spacing:1px; }
 
-.review-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-bottom:24px; }
+.comparison-table { width:100%; border-collapse:collapse; margin-top:24px; }
+  .comparison-table th, .comparison-table td { padding:10px 14px; text-align:center; border:1px solid var(--border); font-size:13px; }
+  .comparison-table th:first-child, .comparison-table td:first-child { text-align:left; }
+  .review-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; margin-bottom:24px; }
 .rv-block { background:var(--mid); padding:24px 22px; }
 .rv-title { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border); }
 .rv-row { display:flex; justify-content:space-between; gap:12px; padding:7px 0; font-size:12px; border-bottom:1px solid rgba(185,152,112,0.04); }
@@ -741,7 +755,7 @@ nav {
         <!-- CONTACTO -->
         <div class="fsec">
           <div class="fsec-hd">Contacto</div>
-          <div class="fgrid">
+          <div class="fgrid g2">
             <div class="field">
               <div class="flabel"><span class="req">*</span> Email empresa</div>
               <input type="email" id="f_email" placeholder="info@empresa.com"/>
@@ -766,7 +780,7 @@ nav {
         <!-- ESPECIALIZACIÓN -->
         <div class="fsec">
           <div class="fsec-hd">Especialización</div>
-          <div class="fgrid">
+          <div class="fgrid g2">
             <div class="field">
               <div class="flabel">Tipos de piedra</div>
               <div class="cg">
