@@ -1098,6 +1098,129 @@
     margin: 24px 0;
   }
 
+  /* SPONSORED SHOWCASES */
+  .showcase-section {
+    padding: 80px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .showcase-section:nth-child(odd) {
+    background: linear-gradient(160deg, var(--stone-mid) 0%, var(--stone-dark) 100%);
+  }
+  .showcase-section:nth-child(even) {
+    background: var(--stone-dark);
+  }
+  .showcase-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .showcase-layout.reverse { direction: rtl; }
+  .showcase-layout.reverse > * { direction: ltr; }
+  .showcase-text { }
+  .showcase-text .section-eyebrow { margin-bottom: 12px; }
+  .showcase-text .section-title { font-size: clamp(32px,4vw,52px); margin-bottom: 12px; }
+  .showcase-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 24px;
+    max-width: 420px;
+  }
+  .showcase-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: var(--accent-gold);
+    color: var(--stone-dark);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity .3s;
+  }
+  .showcase-link:hover { opacity: 0.85; }
+
+  /* Carousel */
+  .showcase-carousel {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border: 1px solid rgba(196,168,130,0.12);
+    background: var(--stone-mid);
+  }
+  .showcase-carousel img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .showcase-carousel img.active { opacity: 1; }
+  .showcase-carousel .carousel-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    background: linear-gradient(to top, rgba(18,14,10,0.92), rgba(18,14,10,0.4), transparent);
+    font-size: 11px;
+    color: var(--stone-sand);
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+  .showcase-carousel .carousel-caption.active { opacity: 1; }
+  .showcase-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    background: rgba(26,22,18,0.85);
+    border: 1px solid rgba(201,168,76,0.5);
+    padding: 5px 14px;
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    backdrop-filter: blur(8px);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .showcase-dots {
+    position: absolute;
+    bottom: 48px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  .showcase-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(196,168,130,0.3);
+    transition: background 0.3s;
+  }
+  .showcase-dot.active {
+    background: var(--accent-gold);
+  }
+
+  @media (max-width: 1024px) {
+    .showcase-layout, .showcase-layout.reverse { grid-template-columns: 1fr; direction: ltr; }
+    .showcase-layout.reverse > * { direction: ltr; }
+    .showcase-section { padding: 60px 30px; }
+  }
+
   /* RESPONSIVE */
   @media (max-width: 1024px) {
     nav { padding: 20px 30px; }
@@ -1944,6 +2067,118 @@
 })();
 </script>
 
+
+<!-- SPONSORED SHOWCASES -->
+<div class="showcase-section" id="showcase-canteras">
+  <div class="showcase-layout">
+    <div class="showcase-text">
+      <div class="section-eyebrow">Canteras destacadas</div>
+      <h2 class="section-title">Directamente<br><em>del origen</em></h2>
+      <div class="gold-divider"></div>
+      <p class="showcase-desc">Conecta con las canteras más importantes del mundo. Bloques de mármol, granito y piedra natural extraídos directamente de la fuente, con fichas técnicas completas y contacto directo.</p>
+      <a href="lapidis-canteras.html" class="showcase-link">Ver canteras destacadas →</a>
+    </div>
+    <div class="showcase-carousel" data-carousel="canteras">
+      <span class="showcase-badge">Patrocinado</span>
+      <img src="https://images.pexels.com/photos/15138925/pexels-photo-15138925.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Cantera de piedra a cielo abierto" class="active" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/4705833/pexels-photo-4705833.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Mármol claro extraído de cantera" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/5506219/pexels-photo-5506219.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Bloques de granito en cantera" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/1451474/pexels-photo-1451474.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Losa de mármol gris y negro" loading="lazy"/>
+      <div class="carousel-caption active">Cantera de piedra a cielo abierto — Extracción industrial</div>
+      <div class="carousel-caption">Mármol claro extraído de cantera premium</div>
+      <div class="carousel-caption">Bloques de granito natural en zona de extracción</div>
+      <div class="carousel-caption">Losa de mármol gris y negro — Material seleccionado</div>
+      <div class="showcase-dots">
+        <div class="showcase-dot active"></div>
+        <div class="showcase-dot"></div>
+        <div class="showcase-dot"></div>
+        <div class="showcase-dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="showcase-section" id="showcase-materiales">
+  <div class="showcase-layout reverse">
+    <div class="showcase-text">
+      <div class="section-eyebrow">Materiales premium</div>
+      <h2 class="section-title">Cada losa,<br><em>una obra de arte</em></h2>
+      <div class="gold-divider"></div>
+      <p class="showcase-desc">Más de 200 materiales documentados con fichas técnicas, colores, acabados, aplicaciones recomendadas y rangos de precio. Desde el mármol de Carrara hasta las cuarcitas más exóticas del mundo.</p>
+      <a href="lapidis-materiales.html" class="showcase-link">Explorar materiales →</a>
+    </div>
+    <div class="showcase-carousel" data-carousel="materiales">
+      <span class="showcase-badge">Patrocinado</span>
+      <img src="https://images.pexels.com/photos/2341290/pexels-photo-2341290.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Superficie de mármol oscuro con vetas" class="active" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/5623225/pexels-photo-5623225.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Mármol blanco con vetas grises" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/6634140/pexels-photo-6634140.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Mármol negro textura premium" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/4705837/pexels-photo-4705837.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Mármol rosa granito baldosa" loading="lazy"/>
+      <div class="carousel-caption active">Superficie de mármol oscuro con vetas naturales</div>
+      <div class="carousel-caption">Mármol blanco con vetas grises — Calidad premium</div>
+      <div class="carousel-caption">Mármol negro — Textura exclusiva para interiores</div>
+      <div class="carousel-caption">Baldosa de mármol rosa — Tono cálido y sofisticado</div>
+      <div class="showcase-dots">
+        <div class="showcase-dot active"></div>
+        <div class="showcase-dot"></div>
+        <div class="showcase-dot"></div>
+        <div class="showcase-dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="showcase-section" id="showcase-proveedores">
+  <div class="showcase-layout">
+    <div class="showcase-text">
+      <div class="section-eyebrow">Proveedores verificados</div>
+      <h2 class="section-title">Los mejores<br><em>del sector</em></h2>
+      <div class="gold-divider"></div>
+      <p class="showcase-desc">Distribuidores, fabricantes y exportadores de piedra natural verificados. Acceso directo a catálogos, showrooms virtuales y solicitud de muestras de los principales operadores del mercado.</p>
+      <a href="lapidis-proveedores.html" class="showcase-link">Ver proveedores →</a>
+    </div>
+    <div class="showcase-carousel" data-carousel="proveedores">
+      <span class="showcase-badge">Patrocinado</span>
+      <img src="https://images.pexels.com/photos/6920614/pexels-photo-6920614.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Interior de baño de lujo con mármol" class="active" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/1101122/pexels-photo-1101122.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Encimera de mármol pulido" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/6492398/pexels-photo-6492398.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Baño moderno con paredes de mármol" loading="lazy"/>
+      <img src="https://images.pexels.com/photos/7078716/pexels-photo-7078716.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Baldosas de mármol gris en pared" loading="lazy"/>
+      <div class="carousel-caption active">Interior de lujo con revestimiento de mármol — Levantina</div>
+      <div class="carousel-caption">Encimera de mármol pulido — Antolini Collection</div>
+      <div class="carousel-caption">Baño moderno con paredes de mármol — Proyecto residencial</div>
+      <div class="carousel-caption">Baldosas de piedra natural — Grupo Tenerife</div>
+      <div class="showcase-dots">
+        <div class="showcase-dot active"></div>
+        <div class="showcase-dot"></div>
+        <div class="showcase-dot"></div>
+        <div class="showcase-dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Showcase carousel script -->
+<script>
+(function() {
+  document.querySelectorAll('.showcase-carousel').forEach(function(carousel) {
+    var imgs = carousel.querySelectorAll('img');
+    var captions = carousel.querySelectorAll('.carousel-caption');
+    var dots = carousel.querySelectorAll('.showcase-dot');
+    var idx = 0;
+    var total = imgs.length;
+    if (total < 2) return;
+
+    setInterval(function() {
+      imgs[idx].classList.remove('active');
+      captions[idx].classList.remove('active');
+      dots[idx].classList.remove('active');
+      idx = (idx + 1) % total;
+      imgs[idx].classList.add('active');
+      captions[idx].classList.add('active');
+      dots[idx].classList.add('active');
+    }, 4000);
+  });
+})();
+</script>
 
 <!-- MEMBERSHIP -->
 <section class="membership">

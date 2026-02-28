@@ -160,6 +160,10 @@ nav {
   transition:background .3s; border:1px solid transparent;
 }
 .cantera-card:hover { background:var(--stone-warm); border-color:rgba(196,168,130,0.15); }
+.card-img-wrap { width:100%; height:160px; overflow:hidden; position:relative; background:linear-gradient(135deg,var(--stone-mid),#2a241c); }
+.card-img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform .5s cubic-bezier(.25,.46,.45,.94); display:block; }
+.cantera-card:hover .card-img-wrap img { transform:scale(1.06); }
+.card-img-label { position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:14px; letter-spacing:4px; text-transform:uppercase; color:rgba(196,168,130,0.2); font-family:'Bebas Neue',sans-serif; }
 .card-top { padding:28px 28px 16px; position:relative; }
 .card-color-strip {
   position:absolute; top:0; left:0; right:0; height:3px;
@@ -483,6 +487,23 @@ function getFiltered() {
   });
 }
 
+var QUARRY_IMGS = {
+  'Mármol': 'https://images.pexels.com/photos/4705833/pexels-photo-4705833.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'Granito': 'https://images.pexels.com/photos/5506219/pexels-photo-5506219.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'Caliza': 'https://images.pexels.com/photos/4705819/pexels-photo-4705819.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'Travertino': 'https://images.pexels.com/photos/7078716/pexels-photo-7078716.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'Pizarra': 'https://images.pexels.com/photos/1451474/pexels-photo-1451474.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'Arenisca': 'https://images.pexels.com/photos/4705837/pexels-photo-4705837.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'Cuarcita': 'https://images.pexels.com/photos/5623225/pexels-photo-5623225.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'Basalto': 'https://images.pexels.com/photos/6634140/pexels-photo-6634140.jpeg?auto=compress&cs=tinysrgb&w=600',
+  '_default': 'https://images.pexels.com/photos/2341290/pexels-photo-2341290.jpeg?auto=compress&cs=tinysrgb&w=600'
+};
+function getQuarryImg(tipo) {
+  var t = (tipo || '').toLowerCase();
+  for (var k in QUARRY_IMGS) { if (k !== '_default' && t.includes(k.toLowerCase())) return QUARRY_IMGS[k]; }
+  return QUARRY_IMGS['_default'];
+}
+
 function renderGrid(data) {
   const grid = document.getElementById('canterasGrid');
   const empty = document.getElementById('emptyState');
@@ -492,7 +513,12 @@ function renderGrid(data) {
     const color = getStoneColor(c['Tipo de Piedra']);
     const sc = getStatusClass(c['Estado Operativo']);
     const bc = getBadgeClass(c['Estado Operativo']);
+    const imgUrl = getQuarryImg(c['Tipo de Piedra']);
     return `<div class="cantera-card" onclick="openModal(${CANTERAS.indexOf(c)})">
+      <div class="card-img-wrap">
+        <img src="${imgUrl}" alt="${c['Nombre de la Cantera']}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="card-img-label" style="display:none">${c['Tipo de Piedra']}</div>
+      </div>
       <div class="card-top">
         <div class="card-color-strip" style="background:linear-gradient(90deg,${color},transparent)"></div>
         <div class="card-badges">

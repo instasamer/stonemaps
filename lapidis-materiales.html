@@ -418,6 +418,58 @@ function renderGrid() {
   }
 }
 
+var MAT_IMG_MAP = {
+  'mármol': {
+    'blanco': 'https://images.pexels.com/photos/4705833/pexels-photo-4705833.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'negro': 'https://images.pexels.com/photos/6634140/pexels-photo-6634140.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'gris': 'https://images.pexels.com/photos/1451474/pexels-photo-1451474.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'rosa': 'https://images.pexels.com/photos/4705837/pexels-photo-4705837.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'verde': 'https://images.pexels.com/photos/2341290/pexels-photo-2341290.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'beige': 'https://images.pexels.com/photos/4705819/pexels-photo-4705819.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'crema': 'https://images.pexels.com/photos/4705819/pexels-photo-4705819.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'marfil': 'https://images.pexels.com/photos/4705833/pexels-photo-4705833.jpeg?auto=compress&cs=tinysrgb&w=600',
+    '_default': 'https://images.pexels.com/photos/5623225/pexels-photo-5623225.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  'granito': {
+    'negro': 'https://images.pexels.com/photos/6634140/pexels-photo-6634140.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'gris': 'https://images.pexels.com/photos/5506219/pexels-photo-5506219.jpeg?auto=compress&cs=tinysrgb&w=600',
+    'rosa': 'https://images.pexels.com/photos/4705837/pexels-photo-4705837.jpeg?auto=compress&cs=tinysrgb&w=600',
+    '_default': 'https://images.pexels.com/photos/5506219/pexels-photo-5506219.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  'cuarcita': {
+    '_default': 'https://images.pexels.com/photos/5623225/pexels-photo-5623225.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  'travertino': {
+    '_default': 'https://images.pexels.com/photos/7078716/pexels-photo-7078716.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  'caliza': {
+    '_default': 'https://images.pexels.com/photos/4705819/pexels-photo-4705819.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  'pizarra': {
+    '_default': 'https://images.pexels.com/photos/1451474/pexels-photo-1451474.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  'ónix': {
+    '_default': 'https://images.pexels.com/photos/2341290/pexels-photo-2341290.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  'arenisca': {
+    '_default': 'https://images.pexels.com/photos/4705837/pexels-photo-4705837.jpeg?auto=compress&cs=tinysrgb&w=600'
+  },
+  '_default': 'https://images.pexels.com/photos/1101122/pexels-photo-1101122.jpeg?auto=compress&cs=tinysrgb&w=600'
+};
+function getRealImg(cat, color) {
+  var c = (cat || '').toLowerCase();
+  var cl = (color || '').toLowerCase();
+  var catMap = null;
+  for (var k in MAT_IMG_MAP) {
+    if (k !== '_default' && c.indexOf(k) >= 0) { catMap = MAT_IMG_MAP[k]; break; }
+  }
+  if (!catMap) return MAT_IMG_MAP['_default'];
+  for (var ck in catMap) {
+    if (ck !== '_default' && cl.indexOf(ck) >= 0) return catMap[ck];
+  }
+  return catMap['_default'] || MAT_IMG_MAP['_default'];
+}
+
 function buildCard(s) {
   var t = s.propiedades_tecnicas || {};
   var bar = getCatColor(s.categoria);
@@ -429,7 +481,7 @@ function buildCard(s) {
   var densidad = t.densidad_kg_m3 ? t.densidad_kg_m3 + ' kg/m³' : '—';
   var acidos = t.resistencia_acidos || '—';
   var helada = t.resistencia_helada || '—';
-  var imgUrl = s.imagen_url_principal || '';
+  var imgUrl = getRealImg(s.categoria, s.color_principal);
   var imgHtml = imgUrl
     ? ['<div class="card-img-wrap"><img class="card-img" src="', imgUrl,
        '" alt="', esc(s.nombre_comercial),
@@ -545,11 +597,10 @@ function buildModal(s) {
   // Sost
   var sostHtml = s.sostenibilidad ? '<div style="flex:1;min-width:160px;display:flex;align-items:center;"><div class="sost-badge"><div class="sost-dot"></div><span class="sost-text">' + esc(s.sostenibilidad) + '</span></div></div>' : '';
 
-  var modalImgHtml = s.imagen_url_principal
-    ? ['<div class="modal-img-wrap"><img class="modal-img" src="', s.imagen_url_principal,
-       '" alt="', esc(s.nombre_comercial),
-       '" loading="lazy" onerror="this.style.display=&#39;none&#39;"/></div>'].join('')
-    : '';
+  var modalImgUrl = getRealImg(s.categoria, s.color_principal);
+  var modalImgHtml = '<div class="modal-img-wrap"><img class="modal-img" src="' + modalImgUrl +
+       '" alt="' + esc(s.nombre_comercial) +
+       '" loading="lazy" onerror="this.style.display=&#39;none&#39;"/></div>';
   return '<div class="modal-color-strip" style="background:' + bar + '"></div>' +
   '<div class="modal-header">' +
     '<div class="modal-eyebrow"><span class="modal-cat">' + esc(s.categoria) + '</span><span class="modal-id">#' + esc(s.id) + '</span></div>' +
